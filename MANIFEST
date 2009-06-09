@@ -1,0 +1,8 @@
+COPYING
+Makefile
+README
+aws4c.c
+aws4c.h
+s3_get.c
+s3_put.c
+sqs_example.c
