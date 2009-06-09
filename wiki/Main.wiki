@@ -8,11 +8,7 @@ Add your content here.
 
 = Details =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+  For further information refer to the [DevGuide Developer's guide] and [APIRef API reference] also the annotated source code is located at http://v-lad.org/software/aws4c/srcdox/html/
 
-= Annotated source code =
 
-Annotated source code is located at http://v-lad.org/software/aws4c/srcdox/html/
+   
