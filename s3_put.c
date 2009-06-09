@@ -25,7 +25,6 @@
 
 int main ( int argc, char * argv[] )
 {
-  puts ( "Curl Submitter" );
 
   aws_init ();
   aws_set_debug  ( 0 );
