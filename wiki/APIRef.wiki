@@ -30,12 +30,16 @@ Parameters:
 This function loads AWS authentication credentials corresponding to the user given user ID   from ~/.awsAuth file.   All subsequent S3 and SQS operations will use these crendentials.
 This function must be called before the first SQS or S3 operation.   It could be called again when the credential switch is required.
 
-See [Auth] for details about ‘~/.awsAuth’ file.
+See [DevGuide#awsAuth Developer's Guide] for details about ‘~/.awsAuth’ file.
 
-===aws_set_debug
-===aws_set_id
-===aws_set_key
+===aws_set_debug====
+
+===aws_set_id====
+
+===aws_set_key===
+
 ===aws_set_keyid===
+
 
 
 
