@@ -17,7 +17,6 @@
 
 
 #include <stdio.h>
-#include <getopt.h>
 #include <stdlib.h>
 #include "aws4c.h"
 
@@ -26,7 +25,6 @@
 
 int main ( int argc, char * argv[] )
 {
-  puts ( "Curl Requester" );
 
   
 
