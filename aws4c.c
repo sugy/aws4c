@@ -410,7 +410,7 @@ static char * SQSSign ( char * str )
 
 
 /*!
-  \defgroup Conf Configuration Functions
+  \defgroup conf Configuration Functions
   \{
 */
 
@@ -508,7 +508,7 @@ int aws_read_config ( char * const id )
 
 
 /*!
-  \defgroup S3 S3 interface functions
+  \defgroup s3 S3 Interface Functions
   \{
 */
 
@@ -668,7 +668,7 @@ static char* __aws_sign ( char * const str )
 
 #define SQS_REQ_TAIL   "&Signature=%s" "&SignatureVersion=1" "&Timestamp=%s" "&Version=2009-02-01"
 /*!
-  \defgroup SQS SQS interface functions
+  \defgroup sqs SQS Interface Functions
   \{
 */
 
@@ -1097,7 +1097,7 @@ int sqs_delete_message ( IOBuf * bf, char * const url, char * receipt )
 
 
 /*!
-  \defgroup IOBuf I/O Buffer functions
+  \defgroup iobuf I/O Buffer functions
   \{
 */
 
