@@ -425,17 +425,19 @@ void aws_set_debug (int d)
 }
 
 /// \brief Set AWS account ID to be read from .awsAuth file
-/// \param str account ID
-void aws_set_id ( char * const str )     
-{ ID = str == NULL ? NULL : strdup(str); }
+/// \param id new account ID
+void aws_set_id ( char * const id )     
+{ ID = id == NULL ? NULL : strdup(id); }
 
 /// Set AWS account access key
-void aws_set_key ( char * const str )   
-{ awsKey = str == NULL ? NULL : strdup(str); }
+/// \param key new AWS authentication key
+void aws_set_key ( char * const key )   
+{ awsKey = key == NULL ? NULL : strdup(key); }
 
 /// Set AWS account access key ID
-void aws_set_keyid ( char * const str ) 
-{ awsKeyID = str == NULL ? NULL :  strdup(str);}
+/// \param keyid new AWS key ID
+void aws_set_keyid ( char * const keyid ) 
+{ awsKeyID = keyid == NULL ? NULL :  strdup(keyid);}
 
 /// Read AWS authentication records
 /// \param id  user ID

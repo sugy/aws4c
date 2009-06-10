@@ -8,7 +8,6 @@ Licensing
 See COPYING  for license information.
 
 
-
 Prerequisites
 --------------
 
@@ -19,7 +18,7 @@ Prerequisites
    * OpenSSL (http://www.openssl.org/)
 
 
-Authenticatio with AWS
+Authentication with AWS
 ----------------------
 
 AWS4C uses ~/.awsAuth file for retrieving AWS credentials the .awsAuth
