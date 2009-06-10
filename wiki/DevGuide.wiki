@@ -1,7 +1,7 @@
 #summary Developer Guide
 #labels Phase-Implementation
 
-==Authentication keys==
+==Authentication Keys==
 
 AWS4C uses `~/.awsAuth` file for retrieving AWS credentials the `.awsAuth` has the format similar to UNIX `passwd` file.  Each line of the file should contain the following items,  user ID,  AWS Key ID, and AWS Key. The items should be separated by colon ':'.   The first item of each line the user ID parameter is a record identifier.  The record identifier is used by `aws_read_config` function to the AWS key  id and the value to be used  by the library.  The sample code supplied with this library uses ID 'sample'
 Make sure to configure this ID in your `.awsAuth` file before running the  example programs.
