@@ -16,5 +16,4 @@ sample:1XA39S3xwSAMPLE:IK234jJk3454543SAMPLE
 }}}
 
 
-You don't have to rely on this facility to use AWS4C library. If you have your own secure mechanism of storing the AWS credentials you can use [APIRef#aws_set_key] and [APIRef#aws_set_keyid] functions to set the AWS credentials.  Keep in mind that hard-coding this values in the code like some libraries recommend is terribly insecure.
-
+You don't have to rely on this facility to use AWS4C library. If you have your own secure mechanism of storing the AWS credentials you can use [APIRef#aws_set_key aws_set_key] and [APIRef#aws_set_keyid aws_set_keyid] functions to set the AWS credentials.  Keep in mind that hard-coding this values in the code like some libraries recommend is terribly insecure.
