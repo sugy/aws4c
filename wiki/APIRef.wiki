@@ -6,15 +6,18 @@
 The public AWS4C functions are divided into four groups:
 
     * [APIRef#Configuration_Functions Configuration Functions]
-    * S3 interface functions
-    * SQS interface functions
-    * I/O Buffer functions 
+    * [APIRef#S3_Interface_Functions S3 Interface Functions]
+    * [APIRef#SQS_Interface_Functions SQS Interface Functions]
+    * [APIEREF#I/O+Buffer+Functions I/O Buffer Functions] 
 
 
 == Configuration Functions ==
-== S3 interface functions  ==
-== SQS interface functions == 
-== I/O Buffer functions    ==
+
+== S3 Interface Functions  ==
+
+== SQS Interface Functions == 
+
+== I/O Buffer Functions    ==
 
 
 Add your content here.
