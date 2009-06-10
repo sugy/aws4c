@@ -19,12 +19,13 @@ void aws_init  (  )
 Initialize the library. This function must be the first AWS4C function called.
 
 ===aws_read_config===
-int aws_read_config 	( char *const   	id  )  	
+
+_int *aws_read_config* 	( char '*' const id  )_  	
 
 Read AWS authentication records.
 
 Parameters:
-    	id 	user ID
+    	_id_ 	user ID
 
 
 This function loads AWS authentication credentials corresponding to the user given user ID   from ~/.awsAuth file.   All subsequent S3 and SQS operations will use these crendentials.
@@ -33,6 +34,17 @@ This function must be called before the first SQS or S3 operation.   It could be
 See [DevGuide#Authentication_Keys Developer's Guide] for details about ‘~/.awsAuth’ file.
 
 ===aws_set_debug====
+
+_void *aws_set_debug* 	( int 	*d*  )  _	
+
+
+Enable debugging output.
+
+Parameters:
+    	d 	non-zero causes debugging output to be printed
+
+This function controls whether debugging output is printer out. Calling it with non-zero parameter causes the debug messages to be printed out.
+
 
 ===aws_set_id====
 
