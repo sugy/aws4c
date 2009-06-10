@@ -13,11 +13,37 @@ The public AWS4C functions are divided into four groups:
 
 == Configuration Functions ==
 
+===aws_init===
+void aws_init  (  )   	
+
+Initialize the library. This function must be the first AWS4C function called.
+
+===aws_read_config===
+int aws_read_config 	( char *const   	id  )  	
+
+Read AWS authentication records.
+
+Parameters:
+    	id 	user ID
+
+
+This function loads AWS authentication credentials corresponding to the user given user ID   from ~/.awsAuth file.   All subsequent S3 and SQS operations will use these crendentials.
+This function must be called before the first SQS or S3 operation.   It could be called again when the credential switch is required.
+
+See [Auth] for details about ‘~/.awsAuth’ file.
+
+===aws_set_debug
+===aws_set_id
+===aws_set_key
+===aws_set_keyid===
+
+
+
 == S3 Interface Functions  ==
 
 == SQS Interface Functions == 
 
-== IO Buffer Functions    ==
+== IO Buffer Functions ==
 
 
 Add your content here.
