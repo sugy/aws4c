@@ -69,11 +69,11 @@ The workflow for reading the data from S3  is very similar:
   *	Request the data  the data to AWS S3 by  using s3_get
   *	Read the data by from the buffer by using  aws_iobuf_getline 
   *	Examine results of the operation
-  *	Free the I/O buffer by calling aws_iobuf_free
+  *	Free the I/O buffer by calling [APIRef#aws_iobuf_free aws_iobuf_free]
 
-Note that each I/O buffer are not reusable.  Once you start reading the data from the buffer the new data could not be appended.
+Note that I/O buffers are not reusable.  Once you start reading the data from the buffer the new data could not be appended.
 
-= Examples and Walkthroughs =
+= Examples and Walk-throughs =
 
 For many programmers the easiest way to understand the workings of AWS4C library is through following examples that use the various functions of the library.   After each example we will have a line-by-line explanation of what each of the code fragment does.
 
