@@ -1,7 +1,19 @@
 #summary Developer Guide
 #labels Phase-Implementation,Featured
+=Prerequisites==
 
-==Authentication Keys==
+ AWS4C depends on the following prerequisites:
+  
+   #    CURL (http://curl.haxx.se/)   for network communication
+   #    OpenSSL (http://www.openssl.org/)  for security and cryptography
+
+These prerequisites must be installed before you attempt to build the examples or integrate the library into your project.  Fortunately these libraries are already supplied with the most of the operating systems either as a part of default install or as a standard add-on package.
+
+=Platform=
+The AWS4C had been testing with Mac OS Leopard, Linux and Cygwin. The GCC 3.3.4 was used on all of these platforms.  
+
+
+=Authentication Keys=
 
 AWS4C uses `~/.awsAuth` file for retrieving AWS credentials the `.awsAuth` has the format similar to UNIX `passwd` file.  Each line of the file should contain the following items,  user ID,  AWS Key ID, and AWS Key. The items should be separated by colon ':'.   The first item of each line the user ID parameter is a record identifier.  The record identifier is used by [APIRef#aws_read_config aws_read_config] function to the AWS key  id and the value to be used  by the library.  The sample code supplied with this library uses ID 'sample'  Make sure to configure this ID in your `.awsAuth` file before running the  example programs.
 
@@ -17,3 +29,218 @@ sample:1XA39S3xwSAMPLE:IK234jJk3454543SAMPLE
 
 
 You don't have to rely on this facility to use AWS4C library. If you have your own secure mechanism of storing the AWS credentials you can use [APIRef#aws_set_key aws_set_key] and [APIRef#aws_set_keyid aws_set_keyid] functions to set the AWS credentials.  Keep in mind that hard-coding this values in the code like some libraries recommend is terribly insecure.
+
+==Integrating into your project==
+Integrating the AWS4C into your project is very simple.  First you should copy the aws4c.c and aws4c.h files somewhere where your build script and the compiler could find them.
+
+Then edit the build script to add aws4c.o to the list of your object modules, and make sure that this module is created during the project build.
+
+And finally you should make sure that your link to the AWS4C pre-requisite libraries OpenSSL  ( libcrypto ) and Curl  ( libcurl )
+=== Memory Ownership ===
+AWS4C automatically handles its memory allocations.  If AWS4C requires a data object to last across several it make a copy of the object into its own local buffer.  So it is completely safe to use local stack variables in any call. 
+
+The only exception to this rule is I/O buffers.  Since it is up to your program to decide the lifetime of the I/O buffer, you should allocate and free them as needed.   But keep in mind that I/O buffers are not reusable.  After I/O buffer was used by an AWS4C operation it is no longer valid. 
+=== IO Buffers ===
+The AWS4C implements I/O buffers facility to handle input and output of large objects.  For example  I/O buffers are used to put large files into S3 storage and to subsequently retrieve these files to be processed by your application.   The amount of data that could be appended to the buffer is limited by the available memory and limitations of AWS service.  
+
+In addition to data buffering capabilities I/O buffers store the result the AWS operation such HTTP results codes.  The result codes are stored in the ‘code’ and ‘result’ fields.  The ‘code’ field contains an integer HTTP result code.  Code value of 200 indicates success of the operation,  other values indicate some kind of error.  Refer to  [HTTP Error Response Codes] for more information.  The ‘result’ field contains a response string from the server.   
+
+Besides the result code the I/O buffer type contains the request metadata.  The metadata includes ‘len’, ‘etag’ and ‘lastMod’ fields.  The ‘len’ field contains the total length of the data in the buffer.  The ‘eTag’ and ‘lastMod’ fields contain the information that will help you identify if the object you just requested is the same as the one you requested before. 
+
+
+ Here is a typical program flow for sending the data to the S3
+
+•	Allocate a new I/O buffer by calling aws_iobuf_new
+•	Prepare the data to be submitted by calling aws_iobuf_append repeatedly
+•	Submit the data to AWS S3 by  using s3_put
+•	Examine results of the operation
+•	Free the I/O buffer by calling aws_iobuf_free
+
+
+The workflow for reading the data from S3  is very similar:
+
+•	Allocate a new I/O buffer by calling aws_iobuf_new
+•	Request the data  the data to AWS S3 by  using s3_get
+•	Read the data by from the buffer by using  aws_iobuf_getline
+•	Examine results of the operation
+•	Free the I/O buffer by calling aws_iobuf_free
+
+Note that each I/O buffer are not reusable.  Once you start reading the data from the buffer the new data could not be appended.
+
+=== Examples and Walkthroughs ===
+
+For many programmers the easiest way to understand the workings of AWS4C library is through following examples that use the various functions of the library.   After each example we will have a line-by-line explanation of what each of the code fragment does.
+
+
+== Putting a file into S3 ==
+
+
+The following example is a simple program that writes a file into a S3 bucket. 
+
+{{{
+00001 #include <stdio.h>
+00002 #include <getopt.h>
+00003 #include <stdlib.h>
+00004 #include <string.h>
+00005 #include "aws4c.h"
+00006 
+00007 
+00008 
+00009 
+00010 int main ( int argc, char * argv[] )
+00011 {
+00012   puts ( "Curl Submitter" );
+00013 
+00014   aws_init ();
+00015   aws_set_debug  ( 0 );
+00016   int rc = aws_read_config  ( "id" );
+00017   if ( rc )
+00018     {
+00019       puts ( "Could not found a credential in the the config file" );
+00020       puts ( "Make your ~/.awsAuth file is correct" );
+00021       exit ( 1 );
+00022     }
+00023 
+00024   s3_set_bucket ("aws4c.samples");
+00025 
+00026 
+00027 
+00028   IOBuf * bf = aws_iobuf_new ();
+00029 
+00030 
+00031   int i;
+00032   for ( i = 0 ; i < 9000 ; i ++ )
+00033     {
+00034       char S[128];
+00035       snprintf ( S,sizeof(S), "Ln %d \n" , i );
+00036       aws_iobuf_append ( bf,S, strlen(S));
+00037     }
+00038 
+00039 
+00040   int rv = s3_put ( bf, "aws4c.samplefile" );
+00041 
+00042   printf ( "RV %d\n", rv );
+00043 
+00044   printf ( "CODE    [%d] \n", bf->code );
+00045   printf ( "RESULT  [%s] \n", bf->result );
+00046   printf ( "LEN     [%d] \n", bf->len
+);
+00047   printf ( "LASTMOD [%s] \n", bf->lastMod );
+00048   printf ( "ETAG    [%s] \n", bf->eTag );
+00049 
+00050   while(-1)
+00051     {
+00052   char Ln[1024];
+00053   int sz = aws_iobuf_getline ( bf, Ln, sizeof(Ln));
+00054   if ( Ln[0] == 0 ) break;
+00055   printf ( "S[%3d] %s", sz, Ln );
+00056     }
+00057 
+00058 
+00059 }
+
+}}}
+
+Here is an explanation for the code, note that we will only discuss the lines that are relevant to AWS4C
+
+*Line 5*
+
+{{{
+00005 #include "aws4c.h"
+}}}
+
+Includes the AWS4C header file.
+
+*Lines 14-15*
+
+{{{
+00014   aws_init ();
+00015   aws_set_debug  ( 1 );
+}}}
+
+These lines initialize the AWS4 library and turn on verbose debugging output.
+
+*Lines 16-22*
+
+{{{
+00016   int rc = aws_read_config  ( "id" );
+00017   if ( rc )
+00018     {
+00019       puts ( "Could not found a credential in the the config file" );
+00020       puts ( "Make your ~/.awsAuth file is correct" );
+00021       exit ( 1 );
+00022     }
+}}}
+
+These lines read the credentials from the [DevGuide#Auth  ~/.awsAuth] file and then check the result.  In the event of credential reading failure the error message is printed and the program is stopped.
+
+*Line 24*
+
+{{{
+00024   s3_set_bucket ("aws4c.samples");
+}}}
+
+Selects the current bucket for the operations.  Note that in the current version AWS4C does not provide capabilities for creating the buckets.  After this function is called all subsequent AWS4C S3 operations will be performed in the context of this bucket.
+
+*Line 28*
+
+{{{
+
+00028   IOBuf * bf = aws_iobuf_new ();
+
+}}}
+
+Creates a new [DevGuide#IOBuffers I/O buffer].  This buffer will hold the data that we are going to send to the Amazon Simple Storage Service.
+
+*Lines 31-37*
+
+{{{
+00031   int i;
+00032   for ( i = 0 ; i < 9000 ; i ++ )
+00033     {
+00034       char S[128];
+00035       snprintf ( S,sizeof(S), "Ln %d \n" , i );
+00036       aws_iobuf_append ( bf,S, strlen(S));
+00037     }
+}}}
+
+Prepare the data contents of the file to be sent to S3. This fragment places 9000 lines into the [DevGuide#IO_buffer I/O Buffer] that was created on line 28.
+
+*Line 40*
+
+{{{
+00040   int rv = s3_put ( bf, "aws4c.samplefile" );
+}}}
+
+
+Submits the contents of [DevGuide#IO_Buffer I/O Buffer]  to the S3 service using [APIRef#s3_put s3_put] function.  The contents will be placed into the object named aws4c.samplefile.  That is located in the bucket selected on  Line 24. 
+
+*Lines 42-48*
+
+{{{
+00042   printf ( "RV %d\n", rv );
+00043 
+00044   printf ( "CODE    [%d] \n", bf->code );
+00045   printf ( "RESULT  [%s] \n", bf->result );
+00046   printf ( "LEN     [%d] \n", bf->len
+);
+00047   printf ( "LASTMOD [%s] \n", bf->lastMod );
+00048   printf ( "ETAG    [%s] \n", bf->eTag );
+}}}
+
+This fragment prints out the result and associated metadata of the S3 Put operation.  If the operation was successful the return code ‘rv’ should be equal to 0 and the HTTP code of I/O buffer should be equal to 200.
+
+*Lines 50-56*
+
+{{{
+00050   while(-1)
+00051     {
+00052   char Ln[1024];
+00053   int sz = aws_iobuf_getline ( bf, Ln, sizeof(Ln));
+00054   if ( Ln[0] == 0 ) break;
+00055   printf ( "S[%3d] %s", sz, Ln );
+00056     }
+}}}
+
+
+This fragment prints out the detailed S3 service response.  The response contains request metadata. If any errors occurred during the operation the response will contain the detailed explanation of the error.
