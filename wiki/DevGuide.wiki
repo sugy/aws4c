@@ -56,20 +56,20 @@ Besides the result code the I/O buffer type contains the request metadata.  The 
 
  Here is a typical program flow for sending the data to the S3
 
-*	Allocate a new I/O buffer by calling aws_iobuf_new
-*	Prepare the data to be submitted by calling aws_iobuf_append repeatedly
-*	Submit the data to AWS S3 by  using s3_put
-*	Examine results of the operation
-*	Free the I/O buffer by calling aws_iobuf_free
+  *	Allocate a new I/O buffer by calling aws_iobuf_new
+  *	Prepare the data to be submitted by calling aws_iobuf_append repeatedly
+  *	Submit the data to AWS S3 by  using s3_put
+  *	Examine results of the operation
+  *	Free the I/O buffer by calling aws_iobuf_free
 
 
 The workflow for reading the data from S3  is very similar:
 
-*	Allocate a new I/O buffer by calling aws_iobuf_new
-*	Request the data  the data to AWS S3 by  using s3_get
-*	Read the data by from the buffer by using  aws_iobuf_getline
-*	Examine results of the operation
-*	Free the I/O buffer by calling aws_iobuf_free
+  *	Allocate a new I/O buffer by calling aws_iobuf_new
+  *	Request the data  the data to AWS S3 by  using s3_get
+  *	Read the data by from the buffer by using  aws_iobuf_getline 
+  *	Examine results of the operation
+  *	Free the I/O buffer by calling aws_iobuf_free
 
 Note that each I/O buffer are not reusable.  Once you start reading the data from the buffer the new data could not be appended.
 
