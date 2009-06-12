@@ -640,7 +640,7 @@ These lines read the credentials from the [DevGuide#Auth  ~/.awsAuth] file and t
 
 }}}
 
-This fragment creates a new [DevGuide#IOBuffer  IO_Buffers]  and then requests SQS server to create a queue named AWS-SQS-Sample.   In the event of the error this code prints out the diagnostic message, but doesn’t terminate the program.  Failure to create a queue might not prevent us from proceeding futher.   If the queue already exists from the previous runnings of this example the [APIRef#sqs_create_queue] will return an error condition, but the program could continue.   After the result of the operation is checked the fragment releases IO Buffer by calling [APIRef#aws_iobuf_free]
+This fragment creates a new [DevGuide#IO_Buffers  I/O Buffer]  and then requests SQS server to create a queue named AWS-SQS-Sample.   In the event of the error this code prints out the diagnostic message, but doesn’t terminate the program.  Failure to create a queue might not prevent us from proceeding futher.   If the queue already exists from the previous runnings of this example the [APIRef#sqs_create_queue sqs_create_queue] will return an error condition, but the program could continue.   After the result of the operation is checked the fragment releases IO Buffer by calling [APIRef#aws_iobuf_free aws_iobuf_free]
 
 *Lines 82-83*
 
@@ -787,6 +787,4 @@ This fragment sends  a number of messages to the queue.  For each message the fr
 }}}
 
 This fragment attempts to retrieve a number of messages from the queue.  For each attempt the fragment allocates a new IO Buffer,  prepares the receipt buffer and then requests a message from SQS queue.   In the event of failure the fragment prints out a diagnostic message and terminates the program.  Otherwise deletes the message from the queue.  If the fragment receives an empty receipt it indicates that the queue doesn’t have any messages. In this case the fragment terminates the loop.
-
-
 
