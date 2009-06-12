@@ -57,6 +57,50 @@ This function controls whether debugging output is printer out. Calling it with 
 
 == S3 Interface Functions  ==
 
+==s3_set_host==
+
+*void s3_set_host 	(    char '*'const    str 	 )*
+
+Sets S3 host.  The AWS4C sets the default host to ‘s3.amazonaws.com’ ,  you only need to call this function if you want to use different Simple Storage Services host.
+
+==s3_set_bucket==
+
+* void s3_set_bucket 	( 	char '*'const   	str 	 )  *	
+
+
+Select current S3 bucket.  All subsequent S3 operations will be performed on this bucket.
+
+Parameters:
+    	str 	bucket ID
+
+==s3_get==
+
+*int s3_get 	( IOBuf '*'  	b,  char '*' const   	file) *			
+
+Downloads the  file from the current bucket and  places the data into the I/O buffer.
+
+Parameters:
+    	b 	I/O buffer
+    	file 	filename
+
+Returns: 
+            0 on success or an error code on failure.  Also check the return code in I/O buffer. See [DevGuide#Checking_results_of_AWS_operation Checking results of AWS operation].
+
+==s3_put==
+
+*int s3_put   ( 	IOBuf '*'  	b, char '*' const   	fill )*
+
+Upload the file into currently selected bucket, takes the data from I/O buffer.  
+
+Parameters:
+    	b 	I/O buffer
+    	file 	filename
+
+Returns: 
+            0 on success or an error code on failure.  Also check the return code in I/O buffer. See [DevGuide#Checking_results_of_AWS_operation Checking results of AWS operation].
+
+
+
 == SQS Interface Functions == 
 
 == IO Buffer Functions ==
