@@ -78,7 +78,7 @@ Note that each I/O buffer are not reusable.  Once you start reading the data fro
 For many programmers the easiest way to understand the workings of AWS4C library is through following examples that use the various functions of the library.   After each example we will have a line-by-line explanation of what each of the code fragment does.
 
 
-= Putting a file into S3 =
+== Putting a file into S3 ==
 
 
 The following example is a simple program that writes a file into a S3 bucket. 
@@ -250,3 +250,161 @@ This fragment prints out the result and associated metadata of the S3 Put operat
 
 
 This fragment prints out the detailed S3 service response.  The response contains request metadata. If any errors occurred during the operation the response will contain the detailed explanation of the error.
+
+
+== Retrieving a file from S3 ==
+
+The following example reads the file from the S3 bucket.
+
+{{{
+00001 #include <stdio.h>
+00002 #include <getopt.h>
+00003 #include <stdlib.h>
+00004 #include "aws4c.h"
+00005 
+00006 
+00007 
+00008 
+00009 int main ( int argc, char * argv[] )
+00010 {
+00011   
+00012 
+00013   
+00014 
+00015   aws_init ();
+00016   aws_set_debug ( 1 );
+00017   int rc = aws_read_config  ( "sample" );
+00018   if ( rc )
+00019     {
+00020       puts ( "Could not found a credential in the the config file" );
+00021       puts ( "Make your ~/.awsAuth file is correct" );
+00022       exit ( 1 );
+00023     }
+00024 
+00025   s3_set_host ( "s3.amazonaws.com");
+00026   s3_set_bucket ("aws4c.samples");
+00027 
+00028 
+00029   IOBuf * bf = aws_iobuf_new ();
+00030   int rv = s3_get ( bf, "aws4c.samplefile" );
+00031 
+00032   printf ( "RV %d\n", rv );
+00033 
+00034   printf ( "CODE    [%d] \n", bf->code );
+00035   printf ( "RESULT  [%s] \n", bf->result );
+00036   printf ( "LEN     [%d] \n", bf->len );
+00037   printf ( "LASTMOD [%s] \n", bf->lastMod );
+00038   printf ( "ETAG    [%s] \n", bf->eTag );
+00039 
+00040   while(-1)
+00041     {
+00042   char Ln[1024];
+00043   int sz = aws_iobuf_getline ( bf, Ln, sizeof(Ln));
+00044   if ( Ln[0] == 0 ) break;
+00045   printf ( "S[%3d] %s", sz, Ln );
+00046     }
+00047 
+00048   aws_iobuf_free ( bf );
+00049 
+00050 }
+
+}}}
+
+
+The explanation of the code is given below.
+
+*Line 4*
+
+
+{{{
+00004 #include "aws4c.h"
+}}}
+
+Includes the AWS4C header file.
+
+*Lines 15-16*
+
+{{{
+00015   aws_init ();
+00016   aws_set_debug ( 1 );
+}}}
+
+These lines initialize the AWS4 library and turn on verbose debugging output.
+
+*Lines 17-23*
+
+{{{
+00017   int rc = aws_read_config  ( "sample" );
+00018   if ( rc )
+00019     {
+00020       puts ( "Could not found your credential in the the config file" );
+00021       puts ( "Make your ~/.awsAuth file is correct" );
+00022       exit ( 1 );
+00023     }
+}}}
+
+These lines read the credentials from the [DevGuide#Auth  ~/.awsAuth] file and then check the result.  In the event of credential reading failure the error message is printed and the program is stopped.
+
+*Lines 25-26*
+
+{{{
+00025   s3_set_host ( "s3.amazonaws.com");
+00026   s3_set_bucket ("aws4c.samples");
+}}}
+
+This fragment selects the S3 host and the current bucket for the operations.  Note that in the current version AWS4C does not provide capabilities for creating the buckets.  After this function is called all subsequent AWS4C S3 operations will be performed in the context of this bucket and host.   You don’t need to call [APIRef#s3_set_host s3_set_host] if your application uses default S3 host ‘s3.amazonaws.com’.
+
+*Line 29*
+
+{{{
+00029   IOBuf * bf = aws_iobuf_new ();
+}}}
+
+Creates a new [DevGuide#IOBuffers I/O buffer].  This buffer will be a receptacle for the data that we will retrieve from the Amazon Simple Storage Service.
+
+*Line 30*
+ 
+{{{
+00030   int rv = s3_get ( bf, "aws4c.samplefile" );
+}}}
+
+This line requests the contents of the file ‘aws4c.samplefile’ from the current S3 bucket. The contents of the file will be placed into the buffer allocated on the previous line.
+
+*Lines 32-38*
+
+{{{
+00032   printf ( "RV %d\n", rv );
+00033 
+00034   printf ( "CODE    [%d] \n", bf->code );
+00035   printf ( "RESULT  [%s] \n", bf->result );
+00036   printf ( "LEN     [%d] \n", bf->len );
+00037   printf ( "LASTMOD [%s] \n", bf->lastMod );
+00038   printf ( "ETAG    [%s] \n", bf->eTag );
+}}}
+
+This fragment prints out the result and associated metadata of the S3 Put operation.  If the operation was successful the return code ‘rv’ should be equal to 0 and the HTTP code of I/O buffer should be equal to 200.
+
+*Lines 40-46*
+
+{{{
+00040   while(-1)
+00041     {
+00042   char Ln[1024];
+00043   int sz = aws_iobuf_getline ( bf, Ln, sizeof(Ln));
+00044   if ( Ln[0] == 0 ) break;
+00045   printf ( "S[%3d] %s", sz, Ln );
+00046     }
+}}}
+
+This fragment prints out the contents of the file received from the S3.   If the request for the file resulted in error this fragment will print out the detailed explanation of the error condition.
+
+*Line 48*
+
+{{{
+00048   aws_iobuf_free ( bf );
+}}}
+
+Frees the allocated I/O Buffer
+
+
+
