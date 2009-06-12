@@ -1,21 +1,8 @@
 #summary Main page of the project
 
-== Introduction ==
+== Documentation ==
 
-Documentation:
-
- * Developer Guide 
- * API reference
-
-== Download ==
-
-http://code.google.com/p/aws4c/downloads/list
-
-== Source Code ==
-
-== Source Code Documentation ==
-
-  For further information refer to the [DevGuide Developer's guide] and [APIRef API reference] also the annotated source code is located at http://v-lad.org/software/aws4c/srcdox/html/
-
-
-   
+ * [DevGuide Developer's guide]
+ * [APIRef API reference]
+ * [http://v-lad.org/software/aws4c/srcdox/html/  Source code documentation]
+ * [Download http://code.google.com/p/aws4c/downloads/list]
