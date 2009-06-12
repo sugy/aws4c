@@ -1,5 +1,6 @@
 #summary Developer Guide
 #labels Phase-Implementation,Featured
+
 =Prerequisites==
 
  AWS4C depends on the following prerequisites:
@@ -30,17 +31,22 @@ sample:1XA39S3xwSAMPLE:IK234jJk3454543SAMPLE
 
 You don't have to rely on this facility to use AWS4C library. If you have your own secure mechanism of storing the AWS credentials you can use [APIRef#aws_set_key aws_set_key] and [APIRef#aws_set_keyid aws_set_keyid] functions to set the AWS credentials.  Keep in mind that hard-coding this values in the code like some libraries recommend is terribly insecure.
 
-==Integrating into your project==
+=Integrating into your project=
+
 Integrating the AWS4C into your project is very simple.  First you should copy the aws4c.c and aws4c.h files somewhere where your build script and the compiler could find them.
 
 Then edit the build script to add aws4c.o to the list of your object modules, and make sure that this module is created during the project build.
 
 And finally you should make sure that your link to the AWS4C pre-requisite libraries OpenSSL  ( libcrypto ) and Curl  ( libcurl )
-=== Memory Ownership ===
+
+= Memory Ownership =
+
 AWS4C automatically handles its memory allocations.  If AWS4C requires a data object to last across several it make a copy of the object into its own local buffer.  So it is completely safe to use local stack variables in any call. 
 
 The only exception to this rule is I/O buffers.  Since it is up to your program to decide the lifetime of the I/O buffer, you should allocate and free them as needed.   But keep in mind that I/O buffers are not reusable.  After I/O buffer was used by an AWS4C operation it is no longer valid. 
-=== IO Buffers ===
+
+= IO Buffers =
+
 The AWS4C implements I/O buffers facility to handle input and output of large objects.  For example  I/O buffers are used to put large files into S3 storage and to subsequently retrieve these files to be processed by your application.   The amount of data that could be appended to the buffer is limited by the available memory and limitations of AWS service.  
 
 In addition to data buffering capabilities I/O buffers store the result the AWS operation such HTTP results codes.  The result codes are stored in the ‘code’ and ‘result’ fields.  The ‘code’ field contains an integer HTTP result code.  Code value of 200 indicates success of the operation,  other values indicate some kind of error.  Refer to  [HTTP Error Response Codes] for more information.  The ‘result’ field contains a response string from the server.   
@@ -67,12 +73,12 @@ The workflow for reading the data from S3  is very similar:
 
 Note that each I/O buffer are not reusable.  Once you start reading the data from the buffer the new data could not be appended.
 
-=== Examples and Walkthroughs ===
+= Examples and Walkthroughs =
 
 For many programmers the easiest way to understand the workings of AWS4C library is through following examples that use the various functions of the library.   After each example we will have a line-by-line explanation of what each of the code fragment does.
 
 
-== Putting a file into S3 ==
+= Putting a file into S3 =
 
 
 The following example is a simple program that writes a file into a S3 bucket. 
