@@ -73,6 +73,11 @@ The workflow for reading the data from S3  is very similar:
 
 Note that I/O buffers are not reusable.  Once you start reading the data from the buffer the new data could not be appended.
 
+==Checking results of the operation==
+
+When AWS operations returns 0 it means that there were no problems communicating with AWS.   However it doesn’t mean that the operation succeeded, to verify the result of the operation check the ‘code’ field of the buffer.  If the operation was successful the code is equal to ‘200’,  other values indicate an error condition.  To get the details of the error condition check the ‘result’ field and the contents of I/O buffer.
+
+
 = Examples and Walk-throughs =
 
 For many programmers the easiest way to understand the workings of AWS4C library is through following examples that use the various functions of the library.   After each example we will have a line-by-line explanation of what each of the code fragment does.
