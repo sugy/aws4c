@@ -152,3 +152,111 @@ Returns:
 
 
 ==SQS Interface Functions== 
+
+==sqs_create_queue==
+
+_int sqs_create_queue 	( IOBuf `*` *b*, char `*` const *name* )_ 			
+
+Create SQS queue.
+
+Parameters:
+    	* *b* 	I/O buffer
+    	* *name* 	queue name
+
+Returns:
+    on success return 0, otherwise error code 
+
+==sqs_list_queues==
+ 
+_int sqs_list_queues 	( IOBuf *  *b* ,char `*` const *prefix*	)_			
+
+Retrieves URL of the queue.   
+
+Parameters:
+    	* *b* 	I/O buffer
+    	* *prefix* 	queue prefix. better use the whole name
+
+Returns:
+    on success return 0, otherwise error code
+
+URL is placed into the I/O buffer. Use [APIREF#aws_iobuf_get_line aws_iobuf_get_line] to retrieve it
+
+
+==sqs_get_queueattributes ==
+
+int sqs_get_queueattributes 	(  IOBuf `*`  *b*,   char `*`  url,  int `*`  *timeOut*,  int `*`  *nMesg* ) 			
+
+Retrieve queue’s default visibility timeout and approximate number of messages.
+
+Parameters:
+    	* *b* 	I/O buffer
+    	* *url* 	queue url. Use sqs_list_queues to retrieve
+    	* *timeOut*   points to a variable that will get the value of queue visibility timeout
+    	* *nMesg*     points to a variable that will get the value of approximate number of messages in the queue
+
+Returns:
+    on success return 0, otherwise error code 
+
+       Note that given the distributed nature of the SQS service it is not possible to get exact number of messages in the queue.  This function tries its best to get an approximate number, which is good enough for capacity estimation.
+
+
+==sqs_set_queuevisibilitytimeout ==
+
+_int sqs_set_queuevisibilitytimeout 	(  IOBuf `*` *b*, char `*` *url*, int  sec )_
+
+		
+Set the queue visibility timeout.
+
+Parameters:
+    	* *b* 	I/O buffer
+    	* *url* 	queue url. Use sqs_list_queues to retrieve
+    	* *sec* 	queue visibility timeout in seconds
+
+Returns:
+    on success return 0, otherwise error code 
+
+
+
+==sqs_send_message ==
+
+_int sqs_send_message  (  IOBuf `*`  *b*, char `*` const  *url*, char `*`const *msg* )_	
+
+Send a message to the queue.
+
+Parameters:
+    	* *b* 	I/O buffer
+    	* *url* 	queue url. Use sqs_list_queues to retrieve
+    	* *msg* 	a message to send
+
+Returns:
+    on success return 0, otherwise error code 
+
+==sqs_get_message ==
+
+_int sqs_get_message ( IOBuf `*` *b*, char *const *url*, char `*` *id* )_
+
+Retrieve a message from the queue.
+
+Parameters:
+    	* *b* 	I/O buffer
+    	* *url* queue url. Use sqs_list_queues to retrieve
+    	* *id* 	message receipt handle.
+
+Returns:
+    on success return 0, otherwise error code
+
+Message contents are placed into I/O buffer Caller has to allocate at least 1024 bytes of  memory for the receipt.
+
+==sqs_delete_message ==
+
+_int sqs_delete_message ( IOBuf `*` *bf*, char `*`const *url*, char `*`  *receipt* )_
+
+Delete processed message from the queue.
+
+Parameters:
+    	* *bf* 	I/O buffer
+    	* *url* 	queue url. Use sqs_list_queues to retrieve
+    	* *receipt* 	Message receipt handle.
+
+Returns:
+    on success return 0, otherwise error code 
