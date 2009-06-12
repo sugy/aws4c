@@ -5,4 +5,4 @@
  * [DevGuide Developer's guide]
  * [APIRef API reference]
  * [http://v-lad.org/software/aws4c/srcdox/html/  Source code documentation]
- * [Download http://code.google.com/p/aws4c/downloads/list]
+ * [http://code.google.com/p/aws4c/downloads/list Download]
