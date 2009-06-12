@@ -54,7 +54,7 @@ In addition to data buffering capabilities I/O buffers store the result the AWS 
 Besides the result code the I/O buffer type contains the request metadata.  The metadata includes ‘len’, ‘etag’ and ‘lastMod’ fields.  The ‘len’ field contains the total length of the data in the buffer.  The ‘eTag’ and ‘lastMod’ fields contain the information that will help you identify if the object you just requested is the same as the one you requested before. 
 
 
- Here is a typical program flow for sending the data to the S3
+Here is a typical program flow for sending the data to the S3
 
   *	Allocate a new I/O buffer by calling aws_iobuf_new
   *	Prepare the data to be submitted by calling aws_iobuf_append repeatedly
