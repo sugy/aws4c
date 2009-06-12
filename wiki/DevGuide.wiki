@@ -73,7 +73,7 @@ The workflow for reading the data from S3  is very similar:
 
 Note that I/O buffers are not reusable.  Once you start reading the data from the buffer the new data could not be appended.
 
-==Checking results of the operation==
+==Checking results of AWS operation==
 
 When AWS operations returns 0 it means that there were no problems communicating with AWS.   However it doesn’t mean that the operation succeeded, to verify the result of the operation check the ‘code’ field of the buffer.  If the operation was successful the code is equal to ‘200’,  other values indicate an error condition.  To get the details of the error condition check the ‘result’ field and the contents of I/O buffer.
 
