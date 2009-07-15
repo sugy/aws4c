@@ -5,13 +5,13 @@
 
  AWS4C depends on the following prerequisites:
   
-   *    CURL (http://curl.haxx.se/)   for network communication
-   *    OpenSSL (http://www.openssl.org/)  for security and cryptography
+   *    CURL (http://curl.haxx.se/) --  for network communication
+   *    OpenSSL (http://www.openssl.org/) --  for security and cryptography
 
-These prerequisites must be installed before you attempt to build the examples or integrate the library into your project.  Fortunately these libraries are already supplied with the most of the operating systems either as a part of default install or as a standard add-on package.
+These prerequisites must be installed before you attempt to build the examples or integrate the library into your project.  Fortunately these libraries are already supplied by most operating systems either as a part of the default install or as a standard add-on package.
 
 =Platform=
-The AWS4C had been testing with Mac OS Leopard, Linux and Cygwin. The GCC 3.3.4 was used on all of these platforms.  
+The AWS4C had been tested with Mac OS Leopard, Linux and Cygwin. The GCC 3.3.4 was used on all of these platforms.  
 
 
 =Authentication Keys=
