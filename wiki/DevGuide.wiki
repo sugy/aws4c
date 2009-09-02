@@ -16,7 +16,7 @@ The AWS4C had been tested with Mac OS Leopard, Linux and Cygwin. The GCC 3.3.4 w
 
 =Authentication Keys=
 
-AWS4C uses `~/.awsAuth` file for retrieving AWS credentials the `.awsAuth` has the format similar to UNIX `passwd` file.  Each line of the file should contain the following items,  user ID,  AWS Key ID, and AWS Key. The items should be separated by colon ':'.   The first item of each line the user ID parameter is a record identifier.  The record identifier is used by [APIRef#aws_read_config aws_read_config] function to the AWS key  id and the value to be used  by the library.  The sample code supplied with this library uses ID 'sample'  Make sure to configure this ID in your `.awsAuth` file before running the  example programs.
+AWS4C uses the `~/.awsAuth` file for retrieving AWS credentials. (This file is formatted similarly to a UNIX `passwd` file.)   Each line of the file should contain the following items,  a user ID,  the AWS Key ID, and the AWS Key. These items should be separated by a colon ':'.  In the first item of each line, the user ID parameter is a record identifier.  The record identifier is used by the [APIRef#aws_read_config aws_read_config] function to the AWS key  id and the value to be used  by the library.  The sample code supplied with this library uses the user ID 'sample'  Make sure to configure this ID in your `.awsAuth` file before running the  example programs.
 
 Note the `.awsAuth` file should be owned by the user who is executing the  program and should have permissions such that it is only readable by the owner.
  
@@ -29,27 +29,27 @@ sample:1XA39S3xwSAMPLE:IK234jJk3454543SAMPLE
 }}}
 
 
-You don't have to rely on this facility to use AWS4C library. If you have your own secure mechanism of storing the AWS credentials you can use [APIRef#aws_set_key aws_set_key] and [APIRef#aws_set_keyid aws_set_keyid] functions to set the AWS credentials.  Keep in mind that hard-coding this values in the code like some libraries recommend is terribly insecure.
+You don't have to rely on this facility to use the AWS4C library; if you have your own secure mechanism for storing the AWS credentials, you can use [APIRef#aws_set_key aws_set_key] and [APIRef#aws_set_keyid aws_set_keyid] functions to set the AWS credentials.  Keep in mind that the practices of hard-coding these values into the code recommended by some are terribly insecure.
 
-=Integrating into your project=
+=Integrating into your Project=
 
-Integrating the AWS4C into your project is very simple.  First you should copy the aws4c.c and aws4c.h files somewhere where your build script and the compiler could find them.
+Integrating the AWS4C into your project is very simple.  First you should copy the aws4c.c and aws4c.h files to a folder where your build script and the compiler can find them.
 
-Then edit the build script to add aws4c.o to the list of your object modules, and make sure that this module is created during the project build.
+Next, you should edit the build script to include aws4c.o to the list of your object modules, and make sure that this module is created during the project build.
 
-And finally you should make sure that your link to the AWS4C pre-requisite libraries OpenSSL  ( libcrypto ) and Curl  ( libcurl )
+Finally, you should make sure that you link to the AWS4C pre-requisite libraries OpenSSL  (libcrypto) and Curl  (libcurl).
 
 = Memory Ownership =
 
-AWS4C automatically handles its memory allocations.  If AWS4C requires a data object to last across several it make a copy of the object into its own local buffer.  So it is completely safe to use local stack variables in any call. 
+AWS4C automatically handles its own memory allocations.  If AWS4C requires that a data object last across several calls it copies  the object into its own local buffer.  It is therefore completely safe to use local stack variables in any call. 
 
-The only exception to this rule is I/O buffers.  Since it is up to your program to decide the lifetime of the I/O buffer, you should allocate and free them as needed.   But keep in mind that I/O buffers are not reusable.  After I/O buffer was used by an AWS4C operation it is no longer valid. 
+The only exception to this rule is I/O buffers.  Since it is up to your program to decide the lifetime of the I/O buffer, you should allocate and free them as needed.   Keep in mind that I/O buffers are not reusable;  After  an I/O buffer was used by an AWS4C operation, it is no longer valid. 
 
 = IO Buffers =
 
-The AWS4C implements I/O buffers facility to handle input and output of large objects.  For example  I/O buffers are used to put large files into S3 storage and to subsequently retrieve these files to be processed by your application.   The amount of data that could be appended to the buffer is limited by the available memory and limitations of AWS service.  
+The AWS4C implements I/O buffers to handle input and output of large objects.  For example  I/O buffers are used to put large files into S3 storage, and to subsequently retrieve these files to be processed by your application.   The amount of data that can be appended to the buffer is limited by the available memory and limitations of the AWS service.  
 
-In addition to data buffering capabilities I/O buffers store the result the AWS operation such HTTP results codes.  The result codes are stored in the ‘code’ and ‘result’ fields.  The ‘code’ field contains an integer HTTP result code.  Code value of 200 indicates success of the operation,  other values indicate some kind of error.  Refer to  [HTTP Error Response Codes] for more information.  The ‘result’ field contains a response string from the server.   
+In addition to data buffering capabilities I/O buffers store the AWS operation results such as HTTP result codes.  The result codes are stored in the respective ‘code’ and ‘result’ fields.  The ‘code’ field contains an integer HTTP result code. A code value of 200 indicates a successful operation, while other values indicate some kind of error.  Refer to  [HTTP Error Response Codes] for more information.  The ‘result’ field contains a response string from the server.   
 
 Besides the result code the I/O buffer type contains the request metadata.  The metadata includes ‘len’, ‘etag’ and ‘lastMod’ fields.  The ‘len’ field contains the total length of the data in the buffer.  The ‘eTag’ and ‘lastMod’ fields contain the information that will help you identify if the object you just requested is the same as the one you requested before. 
 
