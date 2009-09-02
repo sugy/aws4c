@@ -57,7 +57,7 @@ Besides the result codes the I/O buffer type contains the request's metadata.  T
 Here is a typical program flow for sending the data to the S3
 
   *	Allocate a new I/O buffer by calling [APIRef#aws_iobuf_new aws_iobuf_new]
-  *	Prepare the data to be submitted by calling [APIRef#aws_iobuf_append repeatedly
+  *	Prepare the data to be submitted by repeatedly calling [APIRef#aws_iobuf_append aws_iobuf_append].
   *	Submit the data to AWS S3 by  using [APIRef#s3_put s3_put]
   *	Examine results of the operation
   *	Free the I/O buffer by calling [APIRef#aws_iobuf_free aws_iobuf_free]
