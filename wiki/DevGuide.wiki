@@ -71,13 +71,13 @@ The workflow for reading the data from S3  is very similar:
   *	Examine results of the operation
   *	Free the I/O buffer by calling [APIRef#aws_iobuf_free aws_iobuf_free]
 
-Note that I/O buffers are not reusable.  Once you start reading the data from the buffer the new data could not be appended.
+Note that I/O buffers are not reusable.  Once you start reading the data from the buffer the additional data can not be appended.
 
-==Checking results of AWS operation==
+==Checking Results of AWS Operations==
 
-When AWS operations returns 0 it means that there were no problems communicating with AWS.   However it doesn’t mean that the operation succeeded, to verify the result of the operation check the ‘code’ field of the buffer.  If the operation was successful the code is equal to ‘200’,  other values indicate an error condition.  To get the details of the error condition check the ‘result’ field and the contents of I/O buffer.
+When AWS operations returns 0 it means that there were no problems communicating with AWS, however it doesn’t mean that the operation succeeded. To verify the result of the operation check the ‘code’ field of the buffer.  If the operation was successful the code will be equal to ‘200’,  other values indicate an error condition.  To get the details of an error condition check the ‘result’ field and the contents of I/O buffer.
 
-Here is the example of checking error condition.
+Here is the example of checking an error condition.
 
 {{{
 	rv = sqs_set_queuevisibilitytimeout ( bf, queueURL , 16 );
