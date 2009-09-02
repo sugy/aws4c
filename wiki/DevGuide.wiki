@@ -65,9 +65,9 @@ Here is a typical program flow for sending the data to the S3
 
 The workflow for reading the data from S3  is very similar:
 
-  *	Allocate a new I/O buffer by calling aws_iobuf_new
-  *	Request the data  the data to AWS S3 by  using s3_get
-  *	Read the data by from the buffer by using  aws_iobuf_getline 
+  *	Allocate a new I/O buffer by calling [APIRef#aws_iobuf_new aws_iobuf_new]
+  *	Request the data  the data to AWS S3 by  using [APIRef#s3_get s3_get]
+  *	Read the data by from the buffer by using  [APIRef#aws_iobuf_getline aws_iobuf_getline]
   *	Examine results of the operation
   *	Free the I/O buffer by calling [APIRef#aws_iobuf_free aws_iobuf_free]
 
