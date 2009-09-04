@@ -298,8 +298,8 @@ The following example reads the file from the S3 bucket.
 00017   int rc = aws_read_config  ( "sample" );
 00018   if ( rc )
 00019     {
-00020       puts ( "Could not found a credential in the the config file" );
-00021       puts ( "Make your ~/.awsAuth file is correct" );
+00020       puts ( "Could not find a credential in the config file" );
+00021       puts ( "Make sire your ~/.awsAuth file is correct" );
 00022       exit ( 1 );
 00023     }
 00024 
@@ -351,7 +351,7 @@ Includes the AWS4C header file.
 00016   aws_set_debug ( 1 );
 }}}
 
-These lines initialize the AWS4 library and turn on verbose debugging output.
+Initializes the AWS4 library and turns on verbose debugging output.
 
 *Lines 17-23*
 
@@ -365,7 +365,7 @@ These lines initialize the AWS4 library and turn on verbose debugging output.
 00023     }
 }}}
 
-These lines read the credentials from the [DevGuide#Auth  ~/.awsAuth] file and then check the result.  In the event of credential reading failure the error message is printed and the program is stopped.
+Reads the credentials from the [DevGuide#Auth  ~/.awsAuth] file and then checks the result.  In the event of credential reading failure, an error message is printed and the program is stopped.
 
 *Lines 25-26*
 
@@ -374,7 +374,7 @@ These lines read the credentials from the [DevGuide#Auth  ~/.awsAuth] file and t
 00026   s3_set_bucket ("aws4c.samples");
 }}}
 
-This fragment selects the S3 host and the current bucket for the operations.  Note that in the current version AWS4C does not provide capabilities for creating the buckets.  After this function is called all subsequent AWS4C S3 operations will be performed in the context of this bucket and host.   You don’t need to call [APIRef#s3_set_host s3_set_host] if your application uses default S3 host ‘s3.amazonaws.com’.
+Selects the S3 host and the current bucket for the operations.  Note that in the current version, AWS4C does not provide capabilities for creating buckets.  After this function is called, all subsequent AWS4C S3 operations will be performed in the context of this bucket and host.   You don’t need to call [APIRef#s3_set_host s3_set_host] if your application uses the default S3 host ‘s3.amazonaws.com’.
 
 *Line 29*
 
@@ -390,7 +390,7 @@ Creates a new [DevGuide#IOBuffers I/O buffer].  This buffer will be a receptacle
 00030   int rv = s3_get ( bf, "aws4c.samplefile" );
 }}}
 
-This line requests the contents of the file ‘aws4c.samplefile’ from the current S3 bucket. The contents of the file will be placed into the buffer allocated on the previous line.
+Requests the contents of the file ‘aws4c.samplefile’ from the current S3 bucket. The contents of the file will be placed into the buffer allocated on the previous line.
 
 *Lines 32-38*
 
@@ -404,7 +404,7 @@ This line requests the contents of the file ‘aws4c.samplefile’ from the curr
 00038   printf ( "ETAG    [%s] \n", bf->eTag );
 }}}
 
-This fragment prints out the result and associated metadata of the S3 Put operation.  If the operation was successful the return code ‘rv’ should be equal to 0 and the HTTP code of I/O buffer should be equal to 200.
+Prints out the result and associated metadata of the `S3_Put' operation.  If the operation was successful, the return code ‘rv’ should be equal to 0 and the I/O buffer HTTP code of should be equal to 200.
 
 *Lines 40-46*
 
