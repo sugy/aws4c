@@ -97,13 +97,13 @@ Here is the example of checking an error condition.
 
 =Examples and Walk-throughs=
 
-For many programmers the easiest way to understand the workings of AWS4C library is through following examples that use the various functions of the library.   After each example we will have a line-by-line explanation of what each of the code fragment does.
+For many programmers the easiest way to understand the workings of the AWS4C library is through following examples that use the various functions of the library.   After each example below we will have a line-by-line explanation of what function each of the code fragment performs.
 
 
-== Putting a file into S3 ==
+== Putting a File Into S3 ==
 
 
-The following example is a simple program that writes a file into a S3 bucket. 
+The following example is a simple program that writes a file into an S3 bucket. 
 
 {{{
 00001 #include <stdio.h>
@@ -117,15 +117,15 @@ The following example is a simple program that writes a file into a S3 bucket.
 00009 
 00010 int main ( int argc, char * argv[] )
 00011 {
-00012   puts ( "Curl Submitter" );
+00012   puts ( "Curl submitter" );
 00013 
 00014   aws_init ();
 00015   aws_set_debug  ( 0 );
 00016   int rc = aws_read_config  ( "id" );
 00017   if ( rc )
 00018     {
-00019       puts ( "Could not found a credential in the the config file" );
-00020       puts ( "Make your ~/.awsAuth file is correct" );
+00019       puts ( "Could not find a credential in the config file" );
+00020       puts ( "Make sure your ~/.awsAuth file is correct" );
 00021       exit ( 1 );
 00022     }
 00023 
@@ -169,7 +169,7 @@ The following example is a simple program that writes a file into a S3 bucket.
 
 }}}
 
-Here is an explanation for the code, note that we will only discuss the lines that are relevant to AWS4C
+Here is an explanation for the above code. Note that we will only discuss the lines that are relevant to AWS4C.
 
 *Line 5*
 
@@ -194,13 +194,13 @@ These lines initialize the AWS4 library and turn on verbose debugging output.
 00016   int rc = aws_read_config  ( "id" );
 00017   if ( rc )
 00018     {
-00019       puts ( "Could not found a credential in the the config file" );
-00020       puts ( "Make your ~/.awsAuth file is correct" );
+00019       puts ( "Could not find a credential in the config file" );
+00020       puts ( "Make sure your ~/.awsAuth file is correct" );
 00021       exit ( 1 );
 00022     }
 }}}
 
-These lines read the credentials from the [DevGuide#Auth  ~/.awsAuth] file and then check the result.  In the event of credential reading failure the error message is printed and the program is stopped.
+These lines read the credentials from the [DevGuide#Auth  ~/.awsAuth] file and then check the result.  In the event of a credential reading failure. The error message is printed and the program is stopped.
 
 *Line 24*
 
@@ -208,7 +208,7 @@ These lines read the credentials from the [DevGuide#Auth  ~/.awsAuth] file and t
 00024   s3_set_bucket ("aws4c.samples");
 }}}
 
-Selects the current bucket for the operations.  Note that in the current version AWS4C does not provide capabilities for creating the buckets.  After this function is called all subsequent AWS4C S3 operations will be performed in the context of this bucket.
+Selects the current bucket for the operations.  Note that in the current version of AWS4C does not provide capabilities for creating buckets.  After this function is called all subsequent AWS4C S3 operations will be performed in the context of this bucket.
 
 *Line 28*
 
@@ -232,7 +232,7 @@ Creates a new [DevGuide#IOBuffers I/O buffer].  This buffer will hold the data t
 00037     }
 }}}
 
-Prepare the data contents of the file to be sent to S3. This fragment places 9000 lines into the [DevGuide#IO_buffer I/O Buffer] that was created on line 28.
+Prepares the data contents of the file to be sent to S3. This fragment places 9000 lines into the [DevGuide#IO_buffer I/O Buffer] that was created on line 28.
 
 *Line 40*
 
@@ -241,7 +241,7 @@ Prepare the data contents of the file to be sent to S3. This fragment places 900
 }}}
 
 
-Submits the contents of [DevGuide#IO_Buffer I/O Buffer]  to the S3 service using [APIRef#s3_put s3_put] function.  The contents will be placed into the object named aws4c.samplefile.  That is located in the bucket selected on  Line 24. 
+Submits the contents of [DevGuide#IO_Buffer I/O Buffer]  to the S3 service using the [APIRef#s3_put s3_put] function.  The contents will be placed into the object named aws4c.samplefile, that is located in the bucket selected on line 24. 
 
 *Lines 42-48*
 
@@ -256,7 +256,7 @@ Submits the contents of [DevGuide#IO_Buffer I/O Buffer]  to the S3 service using
 00048   printf ( "ETAG    [%s] \n", bf->eTag );
 }}}
 
-This fragment prints out the result and associated metadata of the S3 Put operation.  If the operation was successful the return code ‘rv’ should be equal to 0 and the HTTP code of I/O buffer should be equal to 200.
+Prints out the result and associated metadata of the S3 `Put' operation.  If the operation was successful the return code ‘rv’ should be equal to 0 and the I/O buffer HTTP code should be equal to 200.
 
 *Lines 50-56*
 
@@ -271,10 +271,10 @@ This fragment prints out the result and associated metadata of the S3 Put operat
 }}}
 
 
-This fragment prints out the detailed S3 service response.  The response contains request metadata. If any errors occurred during the operation the response will contain the detailed explanation of the error.
+Prints out the detailed S3 service response.  The response contains the request's metadata. If any errors occurred during the operation the response will contain a detailed explanation of the error.
 
 
-== Retrieving a file from S3 ==
+== Retrieving a File From S3 ==
 
 The following example reads the file from the S3 bucket.
 
