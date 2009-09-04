@@ -107,11 +107,11 @@ Parameters:
 
 _void s3_set_host 	(    char `*`const    *str* 	 )_
 
-Sets S3 host.  The AWS4C sets the default host to ‘s3.amazonaws.com’ ,  you only need to call this function if you want to use different Simple Storage Services host.
+Sets S3 host.  The AWS4C sets the default host to ‘s3.amazonaws.com`;  you only need to call this function if you want to use a different Simple Storage Services host.
 
 Parameters:
 
-       *   *str*  hostname
+       *   *str* -  hostname
 
 ==s3_set_bucket==
 
@@ -121,7 +121,7 @@ _ void s3_set_bucket 	( 	char `*`const  *str* 	 )  _
 Select current S3 bucket.  All subsequent S3 operations will be performed on this bucket.
 
 Parameters:
-    	* *str* 	bucket ID
+    	* *str*  - bucket ID
 
 ==s3_get==
 
@@ -130,24 +130,24 @@ _int s3_get 	( IOBuf `*` *b*,  char `*` const  *file*) _
 Downloads the  file from the current bucket and  places the data into the I/O buffer.
 
 Parameters:
-    	* * b * 	I/O buffer
-    	* * file * 	filename
+    	* * b * - I/O buffer
+    	* * file * - filename
 
 Returns: 
-            0 on success or an error code on failure.  Also check the return code in I/O buffer. See [DevGuide#Checking_results_of_AWS_operation Checking results of AWS operation].
+            0 on success or an error code on failure.  Also check the return code in I/O buffer. For more information see [DevGuide#Checking_results_of_AWS_operation Checking results of AWS operation].
 
 ==s3_put==
 
 _int s3_put   ( IOBuf `*` *b*, char `*` const   *file* )_
 
-Upload the file into currently selected bucket, takes the data from I/O buffer.  
+Uploads the file into currently selected bucket and takes the data from I/O buffer.  
 
 Parameters:
-    	* *b* 	I/O buffer
-    	* *file* 	filename
+    	* *b*  - I/O buffer
+    	* *file* - filename
 
 Returns: 
-            0 on success or an error code on failure.  Also check the return code in I/O buffer. See [DevGuide#Checking_results_of_AWS_operation Checking results of AWS operation].
+            0 on success or an error code on failure.  Also check the return code in I/O buffer. For more information see  [DevGuide#Checking_results_of_AWS_operation Checking results of AWS operation].
 
 
 
