@@ -27,13 +27,13 @@ _int aws_read_config 	( char `*` const *id*  )_
 Read AWS authentication records.
 
 Parameters:
-    	* *id* 	user ID
+    	* *id*  - user ID
 
 
-This function loads AWS authentication credentials corresponding to the user given user ID   from ~/.awsAuth file.   All subsequent S3 and SQS operations will use these crendentials.
-This function must be called before the first SQS or S3 operation.   It could be called again when the credential switch is required.
+This function loads AWS authentication credentials corresponding to the user identified by the user ID from ~/.awsAuth file.   All subsequent S3 and SQS operations will use these credentials.
+This function must be called before the first SQS or S3 operation.   It can be called again when the credential switch is required.
 
-See [DevGuide#Authentication_Keys Developer's Guide] for details about ‘~/.awsAuth` file.
+See the [DevGuide#Authentication_Keys Developer's Guide] for details about the `~/.awsAuth` file.
 
 ===aws_set_debug====
 
@@ -43,9 +43,9 @@ _void aws_set_debug 	( int 	*d*  )  _
 Enable debugging output.
 
 Parameters:
-    	* *d* 	non-zero causes debugging output to be printed
+    	* *d* -  non-zero parameter causes debugging output to be printed
 
-This function controls whether debugging output is printer out. Calling it with non-zero parameter causes the debug messages to be printed out.
+This function controls whether debugging output is printed out. Calling it with a non-zero parameter results in the printing of the debug messages.
 
 
 ===aws_set_id====
@@ -72,9 +72,9 @@ _void aws_iobuf_append  (  IOBuf `*`  *B*, char `*` *d*, int *len* )_
 Append data to I/O buffer.
 
 Parameters:
-    	* *B* 	 I/O buffer
-    	* *d* 	 pointer to the data to be appended
-    	* *len*  length of the data to be appended
+    	* *B*  - I/O buffer
+    	* *d*  - pointer to the data to be appended
+    	* *len* -  length of the data to be appended
 
 
 ===aws_iobuf_getline===
@@ -84,9 +84,9 @@ _int aws_iobuf_getline 	( IOBuf `*`  *B*, char `*`  *Line*, int  *size*)_
 Read the next line from the buffer.
 
 Parameters:
-    	* *B* 	I/O buffer
-    	* *Line* 	character array to store the read line in
-    	* *size* 	size of the character array Line
+    	* *B*  - I/O buffer
+    	* *Line* - character array to store the next line from the buffer
+    	* *size* - size of the character array line
 
 Returns:
     Number of characters read or 0 
@@ -98,7 +98,7 @@ _void aws_iobuf_free 	( IOBuf `*`  *bf* )_
 Release IO Buffer.
 
 Parameters:
-    	* *bf* 	I/O buffer to be deleted
+    	* *bf* - I/O buffer to be deleted
 
 
 == S3 Interface Functions  ==
