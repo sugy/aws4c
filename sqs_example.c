@@ -15,17 +15,17 @@
  */
 
 /// \file sqs_example.c
-/// This is an example that shows how to use SQS functions of AWS4C 
+/// This is an example that shows how to use SQS functions of AWS4C.
 /// The example performs the following actions
 ///
 ///    Initializes the library
 ///    Creates the queue
 ///    Obtains the full URL of the queue
-///    Gets get queue parameters
-///    Sets visibility timeout of the queue
+///    Gets the queue parameters
+///    Sets the visibility timeout of the queue
 ///    Puts a number of messages into the queue
 ///    Reads a number of messages from the queue 
-///    Delets the processed messages
+///    Deletes the processed messages
 
 #include <stdio.h>
 #include <getopt.h>
@@ -34,7 +34,7 @@
 #include "aws4c.h"
 
 
-/// a helper function that prints out a result of the operation
+/// This helper function that prints out a result of the operation
 /// and data returned by the server
 void DumpResult ( int rv, IOBuf * bf )
 {
@@ -60,14 +60,14 @@ int main ( int argc, char * argv[] )
 {
   char * queueURL;
 
-  /// Initialized the library
+  /// Initialize the library.
   aws_init ();
   aws_set_debug ( 0 );
   int rc = aws_read_config  ( "sample" );
   if ( rc )
     {
-      puts ( "Could not found a credential in the the config file" );
-      puts ( "Make your ~/.awsAuth file is correct" );
+      puts ( "Could not find a credential in the config file" );
+      puts ( "Make sure your ~/.awsAuth file is correct" );
       exit ( 1 );
     }
  
@@ -75,15 +75,15 @@ int main ( int argc, char * argv[] )
 
 
 
-  /// Create the Queue
+  /// Create the queue
   IOBuf * bf = aws_iobuf_new ();
   int rv = sqs_create_queue ( bf, "AWS-SQS-Sample" );
   if ( rv || bf->code != 200 )
     { 
-      /// Note failure to create the queue means either genuine
-      /// error or simply the fact that the queue already exist
-      /// for most applications it is okay to continue even if this
-      /// operation fails
+      /// Note that failure to create the queue suggests either a genuine
+      /// error or simply that the queue already exists.
+      /// For most applications, it is okay to continue even if this
+      /// operation fails.
       puts ( "Failed to create queue\n" );
       DumpResult ( rv, bf ); 
     }
@@ -91,14 +91,14 @@ int main ( int argc, char * argv[] )
 
 
 
-  /// Get the URL of the queue
-  /// Most applications require the full URL of the queue which might be 
-  /// different from the queue name passwd to the SQSCreate queue
+  /// Get the URL of the queue.
+  /// Most applications require the full URL of the queue thath might be 
+  /// different from the queue name passed to the SQSCreate queue
   bf = aws_iobuf_new ();
   rv = sqs_list_queues ( bf, "AWS-SQS-Sample" );
   if ( rv || bf->code != 200 )
     { 
-      puts ( "Failed to retrive list of  queue\n" );
+      puts ( "Failed to retrieve list of queues.\n" );
       DumpResult ( rv, bf ); 
       exit(0); 
     }
@@ -121,7 +121,7 @@ int main ( int argc, char * argv[] )
   rv = sqs_get_queueattributes ( bf, queueURL , &timeOut, &qLength );
   if ( !rv && bf->code == 200 )
     {
-      printf ( "Queue Timeout = %d  Approximate Lenght =  %d \n",  
+      printf ( "Queue Timeout = %d  Approximate Length  =  %d \n",  
 	       timeOut, qLength );
     }
   else
@@ -140,14 +140,14 @@ int main ( int argc, char * argv[] )
   int i;
   for ( i = 0 ; i < 18 ; i ++ )
     {
-      puts ( "Send Message" );
+      puts ( "Send message" );
       bf = aws_iobuf_new ();
       char Message[256];
       snprintf(Message,sizeof(Message),"Msg #%d  \n\n L=%d\n <A>&lt;</ResponseMetaData>", i,i);
       rv = sqs_send_message ( bf, queueURL, Message );
       if ( rv || bf->code != 200 ) { DumpResult(rv,bf); exit(0); }
     }
-  /// Now receive them back
+  /// Retrieve messages.
   for ( i = 0 ; i < 500 ; i ++ )
   {
       puts ( "Get Message" );
@@ -166,7 +166,7 @@ int main ( int argc, char * argv[] )
 	  rv = sqs_delete_message ( bf, queueURL, receipt );
 	  if ( rv || bf->code != 200 ) DumpResult(rv,bf); 
 	}    
-      else { puts ( "Empty Queue" ); break; }
+      else { puts ( "Empty queue" ); break; }
   }
   puts ("\n---");
 }

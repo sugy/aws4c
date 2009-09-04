@@ -33,8 +33,8 @@ int main ( int argc, char * argv[] )
   int rc = aws_read_config  ( "sample" );
   if ( rc )
     {
-      puts ( "Could not found a credential in the the config file" );
-      puts ( "Make your ~/.awsAuth file is correct" );
+      puts ( "Could not find a credential in the config file" );
+      puts ( "Make sure your ~/.awsAuth file is correct" );
       exit ( 1 );
     }
 
