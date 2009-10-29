@@ -204,7 +204,7 @@ static size_t header ( void * ptr, size_t size, size_t nmemb, void * stream )
     }
   else if ( !strncmp ( ptr, "Content-Length: ", 15 ))
     {
-      b->len = atoi ( ptr + 16 );
+      b->contentLen = atoi ( ptr + 16 );
     }
 
   return nmemb * size;
@@ -1080,15 +1080,7 @@ IOBuf * aws_iobuf_new ()
 {
   IOBuf * bf = malloc(sizeof(IOBuf));
 
-  bf->first   = NULL;
-  bf->current = NULL;
-  bf->pos     = NULL;
-
-  bf->result  = NULL;
-  bf->lastMod = NULL;
-  bf->eTag    = NULL;
-  bf->len     = 0;
-  bf->code    = 0;
+  memset(bf, 0, sizeof(IOBuf));
 
   return bf;
 }
