@@ -50,6 +50,7 @@ int main ( int argc, char * argv[] )
   printf ( "CODE    [%d] \n", bf->code );
   printf ( "RESULT  [%s] \n", bf->result );
   printf ( "LEN     [%d] \n", bf->len );
+  printf ( "C-LEN   [%d] \n", bf->contentLen );
   printf ( "LASTMOD [%s] \n", bf->lastMod );
   printf ( "ETAG    [%s] \n", bf->eTag );
 
