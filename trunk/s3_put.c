@@ -36,6 +36,8 @@ int main ( int argc, char * argv[] )
     }
 
   s3_set_bucket ("aws4c.samples");
+  s3_set_mime ("text/plain");
+  s3_set_acl ("public-read");
 
   IOBuf * bf = aws_iobuf_new ();
 
