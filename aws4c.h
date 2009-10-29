@@ -32,6 +32,7 @@ typedef struct IOBuf
   char * result;
   char * lastMod;
   char * eTag;
+  int contentLen;
   int len;
   int code;
 
