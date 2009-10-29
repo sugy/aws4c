@@ -142,6 +142,10 @@ _void s3_set_mime ( char `*` const str ) _
 
 Set the mime type for the S3 put operation.  All subsequent S3 PUT operations will use this mime type.
 
+==s3_set_acl==
+
+Set access control policy for the S3 put operations. The access control policy should be one of the Amazon's canned access control policies such as 'public-read', 'public-read-write' or 'authenticated-read'
+
 ==s3_get==
 
 _int s3_get 	( IOBuf `*` *b*,  char `*` const  *file*) _			
