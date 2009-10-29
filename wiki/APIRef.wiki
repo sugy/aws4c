@@ -56,6 +56,19 @@ This function controls whether debugging output is printed out. Calling it with 
 
 ==IO Buffer Functions==
 
+===IOBuf==
+
+IOBuf is a data structure that holds the data to be sent to the AWS service or results of AWS operation. The structure has the following fields of interest:
+
+  * _int code_  - operation result code. Standard HTTP result codes
+  * _char `*` result_   -  textual representation of HTTP result code such as "404 Not found"
+  * _char `*` lastMod_  -  date and time of the last modification applied to the object
+  * _char `*` eTag_  - object signature eTag
+  * _char `*` contentLen_ - length of the object returned by the service
+  * _int len_  - actual length of data retrieved from the service
+ 
+
+
 ===aws_iobuf_new ===
 
 _IOBuf`*` aws_iobuf_new (  )_ 	
