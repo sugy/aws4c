@@ -2,7 +2,7 @@
 VERSION=0.1
 DNAME="aws4c-${VERSION}"
 
-CFLAGS = -g
+CFLAGS = -g -Wall
 all: s3_get s3_put sqs_example
 
 aws4c.o: aws4c.h

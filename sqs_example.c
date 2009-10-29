@@ -106,7 +106,7 @@ int main ( int argc, char * argv[] )
   while(-1)
     {
       char Ln[1024];
-      int sz = aws_iobuf_getline ( bf, Ln, sizeof(Ln));
+      aws_iobuf_getline ( bf, Ln, sizeof(Ln));
       if ( Ln[0] == 0 ) break;
       Ln[strlen(Ln)-1] = 0;
       printf ( "Queue: [%s]\n",  Ln );
@@ -169,4 +169,5 @@ int main ( int argc, char * argv[] )
       else { puts ( "Empty queue" ); break; }
   }
   puts ("\n---");
+  return 0;
 }
