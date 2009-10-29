@@ -162,6 +162,12 @@ static size_t writefunc ( void * ptr, size_t size, size_t nmemb, void * stream )
   return nmemb * size;
 }
 
+/// Suppress outputs to stdout
+static size_t writedummyfunc ( void * ptr, size_t size, size_t nmemb, void * stream )
+{
+  return nmemb * size;
+}
+
 /// Handles sending of the data
 /// \param ptr pointer to the incoming data
 /// \param size size of the data member
@@ -328,6 +334,10 @@ static char * GetStringToSign ( char * resource,  int resSize,
 
   snprintf ( reqToSign, sizeof(reqToSign),"%s\n\n\n%s\n/%s",
 	     method, *date, resource );
+
+  // EU: If bucket is in virtual host name, remove bucket from path
+  if (bucket && strncmp(S3Host, bucket, strlen(bucket)) == 0)
+    snprintf ( resource, resSize,"%s", file );
 
   return __aws_sign(reqToSign);
 }
@@ -574,6 +584,8 @@ static int s3_do_put ( IOBuf *b, char * const signature,
   curl_easy_setopt ( ch, CURLOPT_HTTPHEADER, slist);
   curl_easy_setopt ( ch, CURLOPT_URL, Buf );
   curl_easy_setopt ( ch, CURLOPT_READDATA, b );
+  if (!debug)
+    curl_easy_setopt ( ch, CURLOPT_WRITEFUNCTION, writedummyfunc );
   curl_easy_setopt ( ch, CURLOPT_READFUNCTION, readfunc );
   curl_easy_setopt ( ch, CURLOPT_HEADERFUNCTION, header );
   curl_easy_setopt ( ch, CURLOPT_HEADERDATA, b );
