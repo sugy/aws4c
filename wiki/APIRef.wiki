@@ -136,6 +136,12 @@ Select current S3 bucket.  All subsequent S3 operations will be performed on thi
 Parameters:
     	* *str*  - bucket ID
 
+==s3_set_mime==
+
+_void s3_set_mime ( char `*` const str ) _
+
+Set the mime type for the S3 put operation.  All subsequent S3 PUT operations will use this mime type.
+
 ==s3_get==
 
 _int s3_get 	( IOBuf `*` *b*,  char `*` const  *file*) _			
