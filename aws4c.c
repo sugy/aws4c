@@ -64,6 +64,8 @@ static char * awsKey   = NULL;  /// <AWS Key Material
 static char * S3Host     = "s3.amazonaws.com";     /// <AWS S3 host
 static char * SQSHost  = "queue.amazonaws.com";  /// <AWS SQS host
 static char * Bucket   = NULL;
+static char * MimeType = NULL;
+static char * AccessControl = NULL;
 
 static void __debug ( char *fmt, ... ) ;
 static char * __aws_get_iso_date ();
@@ -323,6 +325,7 @@ static char * GetStringToSign ( char * resource,  int resSize,
 			     char * const file )
 {
   char  reqToSign[2048];
+  char  acl[32];
   
   * date = __aws_get_httpdate();
 
@@ -332,8 +335,17 @@ static char * GetStringToSign ( char * resource,  int resSize,
   else
     snprintf ( resource, resSize,"%s", file );
 
-  snprintf ( reqToSign, sizeof(reqToSign),"%s\n\n\n%s\n/%s",
-	     method, *date, resource );
+  if (AccessControl)
+    snprintf( acl, sizeof(acl), "x-amz-acl:%s\n", AccessControl);
+  else
+    acl[0] = 0;
+
+  snprintf ( reqToSign, sizeof(reqToSign),"%s\n\n%s\n%s\n%s/%s",
+	     method,
+	     MimeType ? MimeType : "",
+	     *date,
+	     acl,
+	     resource );
 
   // EU: If bucket is in virtual host name, remove bucket from path
   if (bucket && strncmp(S3Host, bucket, strlen(bucket)) == 0)
@@ -525,6 +537,13 @@ void s3_set_bucket ( char * const str )
 void s3_set_host ( char * const str )  
 { S3Host = str == NULL ? NULL :  strdup(str); }
 
+/// Set S3 MimeType
+void s3_set_mime ( char * const str )
+{ MimeType = str ? strdup(str) : NULL; }
+
+/// Set S3 AccessControl
+void s3_set_acl ( char * const str )
+{ AccessControl = str ? strdup(str) : NULL; }
 
 
 /// Upload the file into currently selected bucket
@@ -573,6 +592,15 @@ static int s3_do_put ( IOBuf *b, char * const signature,
   CURL* ch =  curl_easy_init( );
   struct curl_slist *slist=NULL;
 
+  if (MimeType) {
+    snprintf ( Buf, sizeof(Buf), "Content-Type: %s", MimeType );
+    slist = curl_slist_append(slist, Buf );
+  }
+
+  if (AccessControl) {
+    snprintf ( Buf, sizeof(Buf), "x-amz-acl: %s", AccessControl );
+    slist = curl_slist_append(slist, Buf );
+  }
 
   snprintf ( Buf, sizeof(Buf), "Date: %s", date );
   slist = curl_slist_append(slist, Buf );
