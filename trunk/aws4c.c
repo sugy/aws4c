@@ -41,6 +41,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+#include <unistd.h>
 #include <sys/stat.h>
 #include <curl/curl.h>
 #include <openssl/hmac.h>
@@ -75,7 +76,7 @@ static int s3_do_put ( IOBuf *b, char * const signature,
 static char* __aws_sign ( char * const str );
 static void __chomp ( char  * str );
 
-
+#ifdef ENABLE_UNBASE64
 /// Decode base64 into binary
 /// \param input base64 text
 /// \param length length of the input text
@@ -107,6 +108,7 @@ static char *unbase64(unsigned char *input, int length)
   /// Return the decoded text
   return buffer;
 }
+#endif /* ENABLE_UNBASE64 */
 
 /// Encode a binary into base64 buffer
 /// \param input binary data  text
@@ -122,7 +124,7 @@ static char *__b64_encode(const unsigned char *input, int length)
   bmem = BIO_new(BIO_s_mem());
   b64 = BIO_push(b64, bmem);
   BIO_write(b64, input, length);
-  BIO_flush(b64);
+  if(BIO_flush(b64)) ; /* make gcc 4.1.2 happy */
   BIO_get_mem_ptr(b64, &bptr);
 
   char *buff = (char *)malloc(bptr->length);
@@ -168,8 +170,6 @@ static size_t writefunc ( void * ptr, size_t size, size_t nmemb, void * stream )
 /// \return number of bytes written
 static size_t readfunc ( void * ptr, size_t size, size_t nmemb, void * stream )
 {
-  static int x = 101;
-
   char * Ln = ptr;
   int sz = aws_iobuf_getline ( stream, ptr, size*nmemb);
   __debug ( "Sent[%3d] %s", sz, Ln );
@@ -225,7 +225,7 @@ static char * __aws_get_iso_date ()
   return dTa;
 }
 
-
+#ifdef ENABLE_DUMP
 /// Dump current state
 /// \internal
 static void Dump ()
@@ -239,6 +239,7 @@ static void Dump ()
   printf ( "Bucket : %-40s \n", Bucket );
   printf ( "----------------------------------------\n");
 }
+#endif /* ENABLE_DUMP */
 
 
 /// Print debug output
@@ -296,7 +297,6 @@ static FILE * __aws_getcfg ()
     }
 
   return fopen ( ConfigFile, "r" );
-
 }
 
 
@@ -325,15 +325,14 @@ static char * GetStringToSign ( char * resource,  int resSize,
     snprintf ( resource, resSize,"%s/%s", bucket, file );
   else
     snprintf ( resource, resSize,"%s", file );
-    
 
   snprintf ( reqToSign, sizeof(reqToSign),"%s\n\n\n%s\n/%s",
 	     method, *date, resource );
-  return __aws_sign(reqToSign);
 
+  return __aws_sign(reqToSign);
 }
 
-static int __aws_urlencode ( char * src, char * dest, int nDest )
+static void __aws_urlencode ( char * src, char * dest, int nDest )
 {
   int i;
   int n;
@@ -361,12 +360,8 @@ static int __aws_urlencode ( char * src, char * dest, int nDest )
 
 static int SQSRequest ( IOBuf *b, char * verb, char * const url )
 {
-  char Buf[1024];
-
-  
   CURL* ch =  curl_easy_init( );
   struct curl_slist *slist=NULL;
-
 
   curl_easy_setopt ( ch, CURLOPT_URL, url );
   curl_easy_setopt ( ch, CURLOPT_HEADERDATA, b );
@@ -388,18 +383,16 @@ static int SQSRequest ( IOBuf *b, char * verb, char * const url )
 
   return sc;
 }
+
 static char * SQSSign ( char * str )
 {
   char RealSign[1024];
   char * signature = __aws_sign(str);
-  int c = 0;
-  int n = strlen(signature);
 
   __aws_urlencode ( signature, RealSign, sizeof(RealSign));
     
   free ( signature );
   return strdup(RealSign);
-
 }
 
 
@@ -642,7 +635,6 @@ static int s3_do_get ( IOBuf *b, char * const signature,
 
 static char* __aws_sign ( char * const str )
 {
-  int result;
   HMAC_CTX ctx;
   unsigned char MD[256];
   unsigned len;
@@ -681,14 +673,10 @@ int sqs_create_queue ( IOBuf *b, char * const name )
 {
   __debug ( "Creating Que: %s\n", name );
 
-
-  const char * method = "POST";
   char  resource [1024];
   char  customSign [1024];
   char * date = NULL;
   char * signature = NULL;
-
-
   
   char * Req = 
     "http://queue.amazonaws.com/"
@@ -725,13 +713,10 @@ int sqs_list_queues ( IOBuf *b, char * const prefix )
 {
   __debug ( "Listing Queues PFX: %s\n", prefix );
 
-  const char * method = "POST";
   char  resource [1024];
   char  customSign [1024];
   char * date = NULL;
   char * signature = NULL;
-
-
   
   char * Req = 
     "http://queue.amazonaws.com/"
@@ -769,7 +754,7 @@ int sqs_list_queues ( IOBuf *b, char * const prefix )
       while(-1)
 	{
 	  char Ln[1024];
-	  int sz = aws_iobuf_getline ( nb, Ln, sizeof(Ln));
+	  aws_iobuf_getline ( nb, Ln, sizeof(Ln));
 	  if ( Ln[0] == 0 ) break;
 	  char *q = strstr ( Ln, "<QueueUrl>" );
 	  if ( q != 0 )
@@ -802,7 +787,6 @@ int sqs_get_queueattributes ( IOBuf *b, char * url, int *timeOut, int *nMesg )
 {
   __debug ( "Getting Que Attributes\n" );
 
-  const char * method = "POST";
   char  resource [1024];
   char  customSign [1024];
   char * date = NULL;
@@ -839,7 +823,7 @@ int sqs_get_queueattributes ( IOBuf *b, char * url, int *timeOut, int *nMesg )
   while(-1) 
     {
       char Ln[1024];
-      int sz = aws_iobuf_getline ( b, Ln, sizeof(Ln));
+      aws_iobuf_getline ( b, Ln, sizeof(Ln));
       if ( Ln[0] == 0 ) break;
       
       char *q;
@@ -862,7 +846,6 @@ int sqs_set_queuevisibilitytimeout ( IOBuf *b, char * url, int sec )
 {
   __debug ( "Setting Visibility Timeout : %d\n", sec );
 
-  const char * method = "POST";
   char  resource [1024];
   char  customSign [1024];
   char * date = NULL;
@@ -907,16 +890,12 @@ int sqs_send_message ( IOBuf *b, char * const url, char * const msg )
   __debug ( "Sending Message to the queue %s\n[%s]",
 	  url, msg );
 
-  const char * method = "POST";
   char  resource [10900];
   char  customSign [10900];
   char * date = NULL;
   char * signature = NULL;
   char  encodedMsg[8192];
 
-
-  int i,n;
-  n = 0;
   __aws_urlencode ( msg, encodedMsg, sizeof(encodedMsg));
   __debug ( "Encoded MSG %s", encodedMsg );
 
@@ -960,14 +939,10 @@ int sqs_get_message ( IOBuf * b, char * const url, char * id  )
 {
   __debug ( "Retieving message from: %s", url );
 
-  const char * method = "POST";
   char  resource [10900];
   char  customSign [10900];
   char * date = NULL;
   char * signature = NULL;
-  char  encodedMsg[8192];
-
-
 
   char * Req = 
     "%s/"
@@ -1003,7 +978,7 @@ int sqs_get_message ( IOBuf * b, char * const url, char * id  )
       while(-1) 
 	{
 	  char Ln[1024];
-	  int sz = aws_iobuf_getline ( bf, Ln, sizeof(Ln));
+	  aws_iobuf_getline ( bf, Ln, sizeof(Ln));
 	  if ( Ln[0] == 0 ) break;
 
 	  __debug ( "%s|%s|", inBody ? ">>": "", Ln );
@@ -1052,14 +1027,10 @@ int sqs_get_message ( IOBuf * b, char * const url, char * id  )
 ///
 int sqs_delete_message ( IOBuf * bf, char * const url, char * receipt )
 {
-  const char * method = "POST";
   char  resource [10900];
   char  customSign [10900];
   char * date = NULL;
   char * signature = NULL;
-  char  encodedMsg[8192];
-
-
 
   char * Req = 
     "%s/"
@@ -1166,7 +1137,7 @@ int    aws_iobuf_getline   ( IOBuf * B, char * Line, int size )
 
   while ( size - ln > 1 )
     {
-      if (* B->pos == '\n' ) { B->pos++; Line[ln] = '\n'; ln++; break; }
+      if ( *B->pos == '\n' ) { B->pos++; Line[ln] = '\n'; ln++; break; }
       if ( *B->pos == 0 ) 
       {
 	B->current = B->current->next;
@@ -1210,5 +1181,3 @@ void   aws_iobuf_free ( IOBuf * bf )
 /*!
   \}
 */
-
-

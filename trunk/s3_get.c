@@ -63,4 +63,5 @@ int main ( int argc, char * argv[] )
 
   aws_iobuf_free ( bf );
 
+  return 0;
 }
