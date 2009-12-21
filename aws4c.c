@@ -5,6 +5,8 @@
 /*
  *
  * Copyright(c) 2009,  Vlad Korolev,  <vlad[@]v-lad.org >
+ * 
+ * with contributions from Henry Nestler < Henry at BigFoot.de >
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -32,8 +34,6 @@
 
 */
 
-/// \todo Document .awsAuth file
-/// \todo Include license
 /// \todo Include regression testing
 /// \todo Run thing through valgrind
 
@@ -62,6 +62,7 @@ static char * ID       = NULL;  /// <Current ID
 static char * awsKeyID = NULL;  /// <AWS Key ID
 static char * awsKey   = NULL;  /// <AWS Key Material
 static char * S3Host     = "s3.amazonaws.com";     /// <AWS S3 host
+/// \todo Use SQSHost in SQS functions
 static char * SQSHost  = "queue.amazonaws.com";  /// <AWS SQS host
 static char * Bucket   = NULL;
 static char * MimeType = NULL;
@@ -284,7 +285,7 @@ static char * __aws_get_httpdate ()
 static FILE * __aws_getcfg ()
 {
   int rv;
-  char ConfigFile[256] = "";
+  char ConfigFile[256];
   /// Compose FileName and check
   snprintf ( ConfigFile, sizeof(ConfigFile) - 3, "%s/.awsAuth",
 	     getenv("HOME"));
@@ -620,6 +621,7 @@ static int s3_do_put ( IOBuf *b, char * const signature,
   curl_easy_setopt ( ch, CURLOPT_VERBOSE, debug );
   curl_easy_setopt ( ch, CURLOPT_UPLOAD, 1 );
   curl_easy_setopt ( ch, CURLOPT_INFILESIZE, b->len );
+  curl_easy_setopt ( ch, CURLOPT_FOLLOWLOCATION, 1 );
 
   int  sc  = curl_easy_perform(ch);
   /** \todo check the return code  */
@@ -719,7 +721,7 @@ int sqs_create_queue ( IOBuf *b, char * const name )
   char * signature = NULL;
   
   char * Req = 
-    "http://queue.amazonaws.com/"
+    "http://%s/"
     "?Action=CreateQueue"
     "&QueueName=%s"
     "&AWSAccessKeyId=%s"
@@ -735,7 +737,7 @@ int sqs_create_queue ( IOBuf *b, char * const name )
   snprintf ( customSign, sizeof(customSign), Sign, awsKeyID, name, date );
   signature =  SQSSign ( customSign );
 
-  snprintf ( resource, sizeof(resource), Req , name, awsKeyID, signature, date );
+  snprintf ( resource, sizeof(resource), SQSHost, Req , name, awsKeyID, signature, date );
 
   int sc = SQSRequest( b, "POST", resource ); 
   free ( signature );
@@ -759,7 +761,7 @@ int sqs_list_queues ( IOBuf *b, char * const prefix )
   char * signature = NULL;
   
   char * Req = 
-    "http://queue.amazonaws.com/"
+    "http://%s/"
     "?Action=ListQueues"
     "&QueueNamePrefix=%s"
     "&AWSAccessKeyId=%s"
@@ -775,14 +777,15 @@ int sqs_list_queues ( IOBuf *b, char * const prefix )
   snprintf ( customSign, sizeof(customSign), Sign, awsKeyID, prefix, date );
   signature =  SQSSign ( customSign );
 
-  snprintf ( resource, sizeof(resource), Req , prefix, awsKeyID,
+  snprintf ( resource, sizeof(resource), Req , SQSHost , prefix, awsKeyID,
 	     signature, date );
 
   IOBuf *nb = aws_iobuf_new();
   int sc = SQSRequest( nb, "POST", resource ); 
   free ( signature );
 
-  b-> result = strdup(nb->result);
+  if ( nb->result != NULL )
+    b-> result = strdup(nb->result);
   b-> code   = nb->code;
 
   /// \todo This only retrieves just one line in the string..
