@@ -1,7 +1,7 @@
 AWS4C - A C lbrary to interface with Amazon Web Services
 Copyright (c) 2009  Vlad Korolev   vlad@v-lad.org
 
-Special thanks to Henry N. for the patches
+with Contributions from Henry Nestler <Henry at BigFoot.de>
 
 
 Licensing
