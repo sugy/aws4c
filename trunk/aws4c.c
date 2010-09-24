@@ -628,6 +628,7 @@ static int s3_do_put ( IOBuf *b, char * const signature,
   __debug ( "Return Code: %d ", sc );
   
   curl_slist_free_all(slist);
+  curl_easy_cleanup(ch);
 
   return sc;
 
@@ -665,6 +666,7 @@ static int s3_do_get ( IOBuf *b, char * const signature,
   __debug ( "Return Code: %d ", sc );
   
   curl_slist_free_all(slist);
+  curl_easy_cleanup(ch);
 
   return sc;
 
