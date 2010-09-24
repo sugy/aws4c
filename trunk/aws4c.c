@@ -391,7 +391,7 @@ static int SQSRequest ( IOBuf *b, char * verb, char * const url )
   curl_easy_setopt ( ch, CURLOPT_VERBOSE, debug );
   curl_easy_setopt ( ch, CURLOPT_INFILESIZE, b->len );
   curl_easy_setopt ( ch, CURLOPT_POST, 1 );
-  curl_easy_setopt ( ch, CURLOPT_POST, CURLOPT_POSTFIELDSIZE , 0 );
+  curl_easy_setopt ( ch, CURLOPT_POSTFIELDSIZE , 0 );
   curl_easy_setopt ( ch, CURLOPT_HEADERFUNCTION, header );
   curl_easy_setopt ( ch, CURLOPT_WRITEFUNCTION, writefunc );
   curl_easy_setopt ( ch, CURLOPT_WRITEDATA, b );
