@@ -46,6 +46,7 @@ void aws_set_key ( char * const str );
 void aws_set_keyid ( char * const str );
 int aws_read_config ( char * const ID );
 void aws_set_debug (int d);
+void aws_set_rrs(int r);
 
 
 void s3_set_bucket ( char * const str );
