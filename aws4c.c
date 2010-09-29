@@ -58,6 +58,7 @@
 */
 
 static int debug = 0;   /// <flag to control debugging options
+static int useRrs = 0;  /// <Use reduced redundancy storage
 static char * ID       = NULL;  /// <Current ID
 static char * awsKeyID = NULL;  /// <AWS Key ID
 static char * awsKey   = NULL;  /// <AWS Key Material
@@ -327,6 +328,9 @@ static char * GetStringToSign ( char * resource,  int resSize,
 {
   char  reqToSign[2048];
   char  acl[32];
+  char  rrs[64];
+
+  /// \todo Change the way RRS is handled.  Need to pass it in
   
   * date = __aws_get_httpdate();
 
@@ -341,11 +345,18 @@ static char * GetStringToSign ( char * resource,  int resSize,
   else
     acl[0] = 0;
 
-  snprintf ( reqToSign, sizeof(reqToSign),"%s\n\n%s\n%s\n%s/%s",
+  if (useRrs)
+    strncpy( rrs, "x-amz-storage-class:REDUCED_REDUNDANCY\n", sizeof(rrs));  
+  else
+    rrs[0] = 0;
+
+
+  snprintf ( reqToSign, sizeof(reqToSign),"%s\n\n%s\n%s\n%s%s/%s",
 	     method,
 	     MimeType ? MimeType : "",
 	     *date,
 	     acl,
+	     rrs,
 	     resource );
 
   // EU: If bucket is in virtual host name, remove bucket from path
@@ -454,6 +465,14 @@ void aws_set_key ( char * const key )
 /// \param keyid new AWS key ID
 void aws_set_keyid ( char * const keyid ) 
 { awsKeyID = keyid == NULL ? NULL :  strdup(keyid);}
+
+/// Set reduced redundancy storage
+/// \param r  when non-zero causes puts to use RRS
+void aws_set_rrs (int r) 
+{ useRrs = r; }
+
+
+
 
 /// Read AWS authentication records
 /// \param id  user ID
@@ -602,6 +621,12 @@ static int s3_do_put ( IOBuf *b, char * const signature,
     snprintf ( Buf, sizeof(Buf), "x-amz-acl: %s", AccessControl );
     slist = curl_slist_append(slist, Buf );
   }
+
+  if (useRrs) {
+    strncpy ( Buf, "x-amz-storage-class: REDUCED_REDUNDANCY", sizeof(Buf) );
+    slist = curl_slist_append(slist, Buf );  }
+
+
 
   snprintf ( Buf, sizeof(Buf), "Date: %s", date );
   slist = curl_slist_append(slist, Buf );

@@ -20,10 +20,21 @@
 #include "aws4c.h"
 
 
-
+int putObject ( char * name, IOBuf * bf )
+{
+  int i;
+  for ( i = 0 ; i < 9000 ; i ++ )
+    {
+      char S[128];
+      snprintf ( S,sizeof(S), "Ln %d \n" , i );
+      aws_iobuf_append ( bf,S, strlen(S));
+    }
+  return s3_put ( bf, name );
+}
 
 int main ( int argc, char * argv[] )
 {
+  int rv;
 
   aws_init ();
   aws_set_debug  ( 0 );
@@ -41,17 +52,7 @@ int main ( int argc, char * argv[] )
 
   IOBuf * bf = aws_iobuf_new ();
 
-  int i;
-  for ( i = 0 ; i < 9000 ; i ++ )
-    {
-      char S[128];
-      snprintf ( S,sizeof(S), "Ln %d \n" , i );
-      aws_iobuf_append ( bf,S, strlen(S));
-    }
-
-
-  int rv = s3_put ( bf, "aws4c.samplefile" );
-
+  rv = putObject ( "aws4c.samplefile", bf );
   printf ( "RV %d\n", rv );
 
   printf ( "CODE    [%d] \n", bf->code );
@@ -65,8 +66,21 @@ int main ( int argc, char * argv[] )
   char Ln[1024];
   int sz = aws_iobuf_getline ( bf, Ln, sizeof(Ln));
   if ( Ln[0] == 0 ) break;
-  printf ( "S[%3d] %s", sz, Ln );
+    printf ( "S[%3d] %s", sz, Ln );
     }
+
+  /// Now Repeat using the RRS
+  bf = aws_iobuf_new ();
+  aws_set_rrs ( 1 ) ;
+  rv = putObject ( "aws4c.samplefile.rrs", bf );
+  printf ( "RV %d\n", rv );
+  printf ( "CODE    [%d] \n", bf->code );
+  printf ( "RESULT  [%s] \n", bf->result );
+  printf ( "LEN     [%d] \n", bf->len );
+  printf ( "LASTMOD [%s] \n", bf->lastMod );
+  printf ( "ETAG    [%s] \n", bf->eTag );
+
+
 
   return 0;
 }
