@@ -47,12 +47,28 @@ Parameters:
 
 This function controls whether debugging output is printed out. Calling it with a non-zero parameter results in the printing of the debug messages.
 
+===aws_set_rrs ====
+
+_void aws_set_rrs 	( int 	*rrs*  )  _
+
+Enable Reduced Redundancy Storage
+
+Parameters:
+    	* *rrs* -  non-zero parameter causes all subsequent PUTs to use RRS
+
+
+This function controls whether normal or reduced redundancy storage class is used for the put operations.  Calling this function with non-zero parameter will force all subsequent PUT operations to use reduced redundancy storage.  Reduced redundancy objects are not replicated as many times as the standard S3 objects,  hence they are slightly cheaper to store.  
+
+	
+
 
 ===aws_set_id====
 
 ===aws_set_key===
 
 ===aws_set_keyid===
+
+
 
 ==IO Buffer Functions==
 
