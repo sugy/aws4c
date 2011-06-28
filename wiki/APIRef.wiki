@@ -175,6 +175,26 @@ Parameters:
 Returns: 
             0 on success or an error code on failure.  Also check the return code in I/O buffer. For more information see [DevGuide#Checking_results_of_AWS_operation Checking results of AWS operation].
 
+==s3_get==
+
+_int s3_delete 	( IOBuf `*` *b*,  char `*` const  *file*) _			
+
+
+Deletes the specified file from the current bucket.  
+
+
+Parameters:
+    	* * b * - I/O buffer
+    	* * file * - filename
+
+Returns: 
+            0 on success or an error code on failure.  Also check the return code in I/O buffer.  If operation was performed successfully the HTTP return code should be "204 No Content".    For more information see [DevGuide#Checking_results_of_AWS_operation Checking results of AWS operation].   
+
+Note:   If the specified file doesn't not exist in the bucket the operation still will complete successfully with the return code 0 and HTTP return code 204.
+
+
+
+
 ==s3_put==
 
 _int s3_put   ( IOBuf `*` *b*, char `*` const   *file* )_
