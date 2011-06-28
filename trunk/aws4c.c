@@ -77,6 +77,8 @@ static int s3_do_get ( IOBuf *b, char * const signature,
 			  char * const date, char * const resource );
 static int s3_do_put ( IOBuf *b, char * const signature, 
 			  char * const date, char * const resource );
+static int s3_do_delete ( IOBuf *b, char * const signature, 
+			  char * const date, char * const resource );
 static char* __aws_sign ( char * const str );
 static void __chomp ( char  * str );
 
@@ -602,6 +604,25 @@ int s3_get ( IOBuf * b, char * const file )
   return sc;
 }
 
+/// Delete the file from the currently selected bucket
+/// \param file filename
+int s3_delete ( IOBuf * b, char * const file )
+{
+  char * const method = "DELETE";
+  
+  char  resource [1024];
+  char * date = NULL;
+  char * signature = GetStringToSign ( resource, sizeof(resource), 
+				       &date, method, Bucket, file ); 
+  int sc = s3_do_delete( b, signature, date, resource ); 
+  free ( signature );
+
+
+
+  return sc;
+
+}
+
 
 
 static int s3_do_put ( IOBuf *b, char * const signature, 
@@ -697,7 +718,40 @@ static int s3_do_get ( IOBuf *b, char * const signature,
 
 }
 
+static int s3_do_delete ( IOBuf *b, char * const signature, 
+		       char * const date, char * const resource )
+{
+  char Buf[1024];
 
+  CURL* ch =  curl_easy_init( );
+  struct curl_slist *slist=NULL;
+
+
+  snprintf ( Buf, sizeof(Buf), "Date: %s", date );
+  slist = curl_slist_append(slist, Buf );
+  snprintf ( Buf, sizeof(Buf), "Authorization: AWS %s:%s", awsKeyID, signature );
+  slist = curl_slist_append(slist, Buf );
+
+  snprintf ( Buf, sizeof(Buf), "http://%s/%s", S3Host, resource );
+
+  curl_easy_setopt ( ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+  curl_easy_setopt ( ch, CURLOPT_HTTPHEADER, slist);
+  curl_easy_setopt ( ch, CURLOPT_URL, Buf );
+  curl_easy_setopt ( ch, CURLOPT_HEADERFUNCTION, header );
+  curl_easy_setopt ( ch, CURLOPT_HEADERDATA, b );
+  curl_easy_setopt ( ch, CURLOPT_VERBOSE, debug );
+
+  int  sc  = curl_easy_perform(ch);
+  /** \todo check the return code  */
+  __debug ( "Return Code: %d ", sc );
+
+  
+  curl_slist_free_all(slist);
+  curl_easy_cleanup(ch);
+
+  return sc;
+
+}
 
 
 

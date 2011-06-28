@@ -6,4 +6,5 @@ MANIFEST
 README
 s3_get.c
 s3_put.c
+s3_delete.c
 sqs_example.c
