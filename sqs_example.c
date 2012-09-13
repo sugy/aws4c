@@ -73,6 +73,7 @@ int main ( int argc, char * argv[] )
  
 
 
+  puts ( "-------  CREATE QUEUE" );
 
 
   /// Create the queue
@@ -90,6 +91,7 @@ int main ( int argc, char * argv[] )
   aws_iobuf_free(bf);
 
 
+  puts ( "-------  LIST QUEUES" );
 
   /// Get the URL of the queue.
   /// Most applications require the full URL of the queue thath might be 
@@ -116,6 +118,8 @@ int main ( int argc, char * argv[] )
   if ( queueURL == NULL ) 
      { printf ( "Could not find our queue" ); exit(0); }
 
+  printf ( "--------  QUEUE URL IS  %s \n", queueURL );
+
   bf = aws_iobuf_new ();
   int timeOut, qLength;
   rv = sqs_get_queueattributes ( bf, queueURL , &timeOut, &qLength );
@@ -129,6 +133,7 @@ int main ( int argc, char * argv[] )
       DumpResult(rv,bf); exit(0);
     }
     
+  puts ( "--------  SET QUEUE VISIBILITY TIMEOUT " );
   bf = aws_iobuf_new ();
   rv = sqs_set_queuevisibilitytimeout ( bf, queueURL , 16 );
   if ( rv || bf->code != 200 )
@@ -136,6 +141,7 @@ int main ( int argc, char * argv[] )
       DumpResult(rv,bf); exit(0);
     }
 
+  puts ( "--------  SENDING MESSAGES " );
   /// Send a few messages
   int i;
   for ( i = 0 ; i < 18 ; i ++ )
@@ -143,7 +149,11 @@ int main ( int argc, char * argv[] )
       puts ( "Send message" );
       bf = aws_iobuf_new ();
       char Message[256];
+      // rv = sqs_send_message ( bf, queueURL, "simple" );
       snprintf(Message,sizeof(Message),"Msg #%d  \n\n L=%d\n <A>&lt;</ResponseMetaData>", i,i);
+      //snprintf(Message,sizeof(Message),"Msg%d ", i,i);
+      //snprintf(Message,sizeof(Message),"Msg # %d \n L=%d\n ", i,i);
+      // snprintf(Message,sizeof(Message),"Msg #%d  \n\n L=%d\n ", i,i);
       rv = sqs_send_message ( bf, queueURL, Message );
       if ( rv || bf->code != 200 ) { DumpResult(rv,bf); exit(0); }
     }

@@ -1,5 +1,5 @@
 
-VERSION=0.1
+VERSION=0.6
 DNAME="aws4c-${VERSION}"
 
 CFLAGS = -g -Wall
@@ -22,6 +22,5 @@ clean:
 	-rm s3_get s3_put sqs_example
 	-rm *.tgz
 	-rm -rf ${DNAME}
-	
 
 LDLIBS=`curl-config --libs` -lcrypto
