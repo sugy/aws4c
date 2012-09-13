@@ -374,7 +374,7 @@ static void __aws_urlencode ( char * src, char * dest, int nDest )
   int n;
   memset ( dest, 0, nDest );
   __debug ( "Encoding: %s", src );
-  const char * badChrs = " \n$&+,/:;=?@";
+  const char * badChrs = " \n$&+,/:;=?@<>#";
   const char * hexDigit = "0123456789ABCDEF";
 
   n = 0;
@@ -764,11 +764,8 @@ static char* __aws_sign ( char * const str )
 
   __debug("StrToSign:%s", str );
 
-  HMAC_CTX_init(&ctx);
-  HMAC_Init(&ctx, awsKey, strlen(awsKey), EVP_sha1());
-  HMAC_Update(&ctx,(unsigned char*)str, strlen(str));
-  HMAC_Final(&ctx,(unsigned char*)MD,&len);
-  HMAC_CTX_cleanup(&ctx);
+  HMAC(EVP_sha1(), awsKey, strlen(awsKey), (unsigned char*) str, strlen(str),
+            &MD, &len);
 
   char * b64 = __b64_encode (MD,len);
   __debug("Signature:  %s", b64 );
@@ -818,7 +815,7 @@ int sqs_create_queue ( IOBuf *b, char * const name )
   snprintf ( customSign, sizeof(customSign), Sign, awsKeyID, name, date );
   signature =  SQSSign ( customSign );
 
-  snprintf ( resource, sizeof(resource), SQSHost, Req , name, awsKeyID, signature, date );
+  snprintf ( resource, sizeof (resource), Req, SQSHost, name, awsKeyID, signature, date );
 
   int sc = SQSRequest( b, "POST", resource ); 
   free ( signature );
@@ -1110,32 +1107,42 @@ int sqs_get_message ( IOBuf * b, char * const url, char * id  )
 	  char *q;
 	  char *e;
 
+	  q = Ln; 
+
 	  /// Handle a body already being processed..
 	  if ( inBody )
 	    {
-	      e = strstr ( Ln, "</Body>" );
-	      if ( e ) { *e = 0; inBody = 0; }
-	      aws_iobuf_append (b,Ln,strlen(Ln));
-	      if ( ! inBody ) break;
-	      continue;     
+	      e = strstr ( q, "</Body>" );
+	      if ( e ) { *e = 0; inBody = 0;  }
+	      aws_iobuf_append (b,q,strlen(Ln));
+	      if ( inBody ) continue; 
+	      q = e;
+	      *e = '<';
 	    }
+	  else
+	    { 
 
-	  q = strstr ( Ln, "<ReceiptHandle>" );
-	  if ( q != 0 ) 
-	    {
-	      q += 15;
-	      e = strstr ( Ln, "</ReceiptHandle>" );
-	      *e = 0;
-	      strcpy ( id, q );
-	      q = e+1;
-	      q = strstr ( q, "<Body>" );
-	      if ( q != 0 ) 
+	  q = strstr ( q, "<Body>" );
+          if ( q != 0 ) 
 		{
 		  q += 6;
 		  e = strstr ( q, "</Body>" );
 		  if ( e ) *e = 0; else inBody = 1;
 		  aws_iobuf_append (b,q,strlen(q));
+		  if ( ! e ) continue;
+	          q = e+1;
 		}
+	    }
+
+	  if ( q != NULL )
+	       q = strstr ( q, "<ReceiptHandle>" );
+	  if ( q != 0 ) 
+	    {
+	      q += 15;
+	      e = strstr ( q, "</ReceiptHandle>" );
+	      if ( e == NULL ) break;
+	      *e = 0;
+	      strcpy ( id, q );
 	    }
 	}
      
@@ -1288,6 +1295,8 @@ void   aws_iobuf_free ( IOBuf * bf )
   while ( N->next != NULL )
     {
       IOBufNode * NN = N->next;
+      //TODO:  This is done to get rid of memoyr leak.  But it might break some apps that store pointers to the inner parts of messages.  What needs to be done,  to have this controlled by an option
+      if ( N->buf != NULL ) free ( N->buf );
       free(N);
       N = NN;
     }
